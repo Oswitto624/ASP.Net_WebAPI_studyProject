@@ -10,7 +10,6 @@
   <ItemGroup>
     <Folder Include="Model\" />
     <Folder Include="View\" />
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

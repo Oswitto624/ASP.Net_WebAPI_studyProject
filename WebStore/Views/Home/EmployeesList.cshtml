@@ -28,11 +28,15 @@
                     <td>@employee.FirstName</td>
                     <td>@employee.Patronymic</td>
                     <td>@employee.Age</td>
-                    <td>@employee.ShortName</td>
+                    <td>
+                        <a href="~/home/employee/@employee.Id">@employee.ShortName</a>
+                    </td>
                 </tr>
             }
-        </tbody>
+             </tbody>
           </table>
+          <hr/>
+         <p><a href="~/">На главную</a></p>
 
       </body>
   </html>

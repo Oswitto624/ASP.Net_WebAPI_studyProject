@@ -8,5 +8,10 @@ namespace WebStore.Controllers
         {
             return Content("Привет из контроллера!");
         }
+
+        public IActionResult ContentString(string Id = "-id-")
+        {
+            return Content($"content: {Id}");
+        }
     }
 }

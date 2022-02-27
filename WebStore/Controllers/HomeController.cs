@@ -10,7 +10,7 @@ namespace WebStore.Controllers
 
         public IActionResult Index()
         {
-            return Content("Привет из контроллера!");
+            return View();
         }
 
         public IActionResult ContentString(string Id = "-id-")

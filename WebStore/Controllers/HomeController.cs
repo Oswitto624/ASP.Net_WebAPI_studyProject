@@ -4,6 +4,10 @@ namespace WebStore.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IConfiguration _Configuration;
+
+        public HomeController(IConfiguration Configuration) { _Configuration = Configuration; }
+
         public IActionResult Index()
         {
             return Content("Привет из контроллера!");
@@ -12,6 +16,11 @@ namespace WebStore.Controllers
         public IActionResult ContentString(string Id = "-id-")
         {
             return Content($"content: {Id}");
+        }
+
+        public IActionResult ConfigStr()
+        {
+            return Content($"config: {_Configuration["ServerGreetings"]}");
         }
     }
 }

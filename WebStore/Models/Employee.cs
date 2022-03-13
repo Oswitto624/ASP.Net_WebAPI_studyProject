@@ -8,10 +8,6 @@ namespace WebStore.Models
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string Patronymic { get; set; }
-        public string Sex { get; set; }
-        public int Age { get; set; }
-        public int WorkExperience { get; set; }
-
         public string ShortName
         {
             get
@@ -27,5 +23,18 @@ namespace WebStore.Models
                 return result.ToString();
             }
         }
+        private int _Age;
+        public int Age
+        {
+            get => _Age;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "Значение возраста не может быть меньше 0");
+                _Age = value;
+            }
+        }
+
+
     }
 }

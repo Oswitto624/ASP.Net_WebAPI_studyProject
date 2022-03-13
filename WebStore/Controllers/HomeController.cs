@@ -7,9 +7,9 @@ namespace WebStore.Controllers
     {
         private static readonly List<Employee> __Employees = new()
         {
-            new Employee { Id = 1, LastName = "Иванов", FirstName = "Иван", Patronymic = "Иваныч", Sex = "Male", Age = 23, WorkExperience = 3 },
-            new Employee { Id = 2, LastName = "Сидорова", FirstName = "Сидорыня", Patronymic = "Сидоровна", Sex = "Female", Age = 43, WorkExperience = 18 },
-            new Employee { Id = 3, LastName = "Петров", FirstName = "Петро", Patronymic = "Петрович", Sex = "Male", Age = 37, WorkExperience = 10 },
+            new Employee { Id = 1, LastName = "Иванов", FirstName = "Иван", Patronymic = "Иваныч", Age = 23 },
+            new Employee { Id = 2, LastName = "Сидорова", FirstName = "Сидорыня", Patronymic = "Сидоровна", Age = 43 },
+            new Employee { Id = 3, LastName = "Петров", FirstName = "Петро", Patronymic = "Петрович", Age = 37 },
         };
 
         private readonly IConfiguration _Configuration;

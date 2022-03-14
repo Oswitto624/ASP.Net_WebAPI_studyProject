@@ -10,20 +10,9 @@
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
-    <Content Remove="Views\Home\Partial\_Slider.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Home\Partial\_Slider.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2" />
-    <PackageReference Include="QRCoder" Version="1.4.3" />
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+	  <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2" />
+	  <PackageReference Include="QRCoder" Version="1.4.3" />
   </ItemGroup>
 
 </Project>

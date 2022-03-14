@@ -1,19 +1,19 @@
-﻿  <!DOCTYPE html>
+﻿<partial name="Partial/_Slider"/>
 
-  <html>
-      <head>
-          <title>Главная страница</title>
-      </head>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <partial name="Partial/_LeftSideBar"/>
+            </div>
+            
+            <div class="col-sm-9 padding-right">
+                <partial name="Partial/_Products"/>
+                
+                <partial name="Partial/_CategoryTab"/>
 
-      <body>
-          <h3>Заголовок</h3>
-          <p>Привет из первого представления!</p>
-
-          <a href="~/home/EmployeesList">Список сотрудников</a>
-
-          <p>
-              <img src="/qr/code?str=@DateTime.Now" width="180"/>
-          </p>
-
-      </body>
-  </html>
+                <partial name="Partial/_RecomendedItems"/>
+            </div>
+        </div>
+    </div>
+</section>

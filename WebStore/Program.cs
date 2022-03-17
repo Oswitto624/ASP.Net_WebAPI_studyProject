@@ -20,6 +20,11 @@ app.MapGet("/throw", () =>
 app.MapGet("/greetings", () => app.Configuration["ServerGreetings"]);
 
 app.MapDefaultControllerRoute();
+
+app.MapControllerRoute(
+    name: "ActionRoute",
+    pattern: "{controller}.{action}({a}, {b})");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -23,5 +23,10 @@ namespace WebStore.Controllers
         {
             return Content($"config: {_Configuration["ServerGreetings"]}");
         }
+
+        public IActionResult Sum(int a, int b)
+        {
+            return Content((a + b).ToString());
+        }
     }
 }

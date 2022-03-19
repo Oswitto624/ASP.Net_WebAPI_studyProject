@@ -34,13 +34,18 @@ public class EmployeesController : Controller
         return View(employee);
     }
 
-    //public IActionResult add()
-    //{
-    //    return View();
-    //}
-
-    public IActionResult Edit(int id)
+    public IActionResult Create()
     {
+        return View("Edit", new EmployeesViewModel());
+    }
+
+    public IActionResult Edit(int? Id)
+    {
+        if (Id is not { } id)
+        {
+            return View(new EmployeesViewModel());
+        }
+
         var employee = _EmployeesData.GetById(id);
         if (employee is null)
             return NotFound();
@@ -69,13 +74,45 @@ public class EmployeesController : Controller
             Patronymic = Model.Patronymic,
             Age = Model.Age,
         };
+        if(Model.Id == 0)
+        {
+            var id = _EmployeesData.Add(employee);
+            return RedirectToAction(nameof(Details), new {id});
+        }
+
         _EmployeesData.Edit(employee);
         return RedirectToAction(nameof(Index));
     }
 
 
-    //public IActionResult Delete(int id)
-    //{
-    //    return View();
-    //}
+    public IActionResult Delete(int id)
+    {
+        if(id<0)
+            return BadRequest();
+
+        var employee = _EmployeesData.GetById(id);
+        if (employee is null)
+            return NotFound();
+
+        var model = new EmployeesViewModel
+        {
+            Id = employee.Id,
+            LastName = employee.LastName,
+            FirstName = employee.FirstName,
+            Patronymic = employee.Patronymic,
+            ShortName = employee.ShortName,
+            Age = employee.Age,
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult DeleteConfirmed(int Id) 
+    {
+        if (!_EmployeesData.Delete(Id))
+            return NotFound();
+
+        return RedirectToAction(nameof(Index));
+    }
 }

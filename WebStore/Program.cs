@@ -1,5 +1,20 @@
+using WebStore.Infrastructure.Conventions;
+using WebStore.Infrastructure.Middleware;
+using WebStore.Services;
+using WebStore.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllersWithViews();
+
+//регистрация сервисов
+var services = builder.Services;
+builder.Services.AddControllersWithViews( opt =>
+{
+    opt.Conventions.Add(new TestConvention());
+});
+
+
+services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -17,9 +32,17 @@ app.MapGet("/throw", () =>
     throw new ApplicationException("Пример ошибки приложения");
 });
 
+
 app.MapGet("/greetings", () => app.Configuration["ServerGreetings"]);
 
 app.MapDefaultControllerRoute();
+
+app.UseMiddleware<TestMiddleware>();
+
+app.MapControllerRoute(
+    name: "ActionRoute",
+    pattern: "{controller}.{action}({a}, {b})");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

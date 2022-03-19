@@ -1,29 +1,118 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebStore.Models;
+using WebStore.Services.Interfaces;
+using WebStore.ViewModels;
 
 namespace WebStore.Controllers;
 
+//[Route("Staff/{action=Index}/{id?}")]
 public class EmployeesController : Controller
 {
-    private static readonly List<Employee> __Employees = new()
+    private readonly IEmployeesData _EmployeesData;
+    private readonly ILogger<EmployeesController> _Logger;
+
+    public EmployeesController(IEmployeesData EmployeesData, ILogger<EmployeesController> Logger)
     {
-        new Employee { Id = 1, LastName = "Иванов", FirstName = "Иван", Patronymic = "Иваныч", Age = 23 },
-        new Employee { Id = 2, LastName = "Сидорова", FirstName = "Сидорыня", Patronymic = "Сидоровна", Age = 43 },
-        new Employee { Id = 3, LastName = "Петров", FirstName = "Петро", Patronymic = "Петрович", Age = 37 },
-    };
+        _EmployeesData = EmployeesData;
+        _Logger = Logger;
+    }
 
     public IActionResult Index()
     {
-        return View(__Employees);
+        var employees = _EmployeesData.GetAll();
+        return View(employees);
     }
 
+    //[Route("~/employees/info-({id:int})")]
     public IActionResult Details(int Id)
     {
-        var employee = __Employees.FirstOrDefault(e => e.Id == Id);
+        var employee = _EmployeesData.GetById(Id);
 
-        if(employee == null)
+        if (employee == null)
             return NotFound();
 
         return View(employee);
+    }
+
+    public IActionResult Create()
+    {
+        return View("Edit", new EmployeesViewModel());
+    }
+
+    public IActionResult Edit(int? Id)
+    {
+        if (Id is not { } id)
+        {
+            return View(new EmployeesViewModel());
+        }
+
+        var employee = _EmployeesData.GetById(id);
+        if (employee is null)
+            return NotFound();
+
+        var model = new EmployeesViewModel
+        {
+            Id = employee.Id,
+            LastName = employee.LastName,
+            FirstName = employee.FirstName,
+            Patronymic = employee.Patronymic,
+            ShortName = employee.ShortName,
+            Age = employee.Age,
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(EmployeesViewModel Model)
+    {
+        var employee = new Employee
+        {
+            Id = Model.Id,
+            FirstName = Model.FirstName,
+            LastName = Model.LastName,
+            Patronymic = Model.Patronymic,
+            Age = Model.Age,
+        };
+        if(Model.Id == 0)
+        {
+            var id = _EmployeesData.Add(employee);
+            return RedirectToAction(nameof(Details), new {id});
+        }
+
+        _EmployeesData.Edit(employee);
+        return RedirectToAction(nameof(Index));
+    }
+
+
+    public IActionResult Delete(int id)
+    {
+        if(id<0)
+            return BadRequest();
+
+        var employee = _EmployeesData.GetById(id);
+        if (employee is null)
+            return NotFound();
+
+        var model = new EmployeesViewModel
+        {
+            Id = employee.Id,
+            LastName = employee.LastName,
+            FirstName = employee.FirstName,
+            Patronymic = employee.Patronymic,
+            ShortName = employee.ShortName,
+            Age = employee.Age,
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult DeleteConfirmed(int Id) 
+    {
+        if (!_EmployeesData.Delete(Id))
+            return NotFound();
+
+        return RedirectToAction(nameof(Index));
     }
 }

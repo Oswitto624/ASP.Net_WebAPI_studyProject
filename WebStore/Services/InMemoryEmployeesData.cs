@@ -17,18 +17,18 @@ public class InMemoryEmployeesData : IEmployeesData
         _LastFreeId = _Employees.Count == 0 ? 1 : _Employees.Max(e => e.Id) + 1; //только для тестового сервиса
     }
 
-    IEnumerable<Employee> GetAll()
+    public IEnumerable<Employee> GetAll()
     {
         return _Employees;
     }
 
-    Employee? GetById(int id)
+    public Employee? GetById(int id)
     {
         var employee = _Employees.FirstOrDefault(employee => employee.Id == id);
         return employee;
     }
 
-    int Add(Employee employee)
+    public int Add(Employee employee)
     {
         if(employee is null)
             throw new ArgumentNullException(nameof(employee));
@@ -42,14 +42,14 @@ public class InMemoryEmployeesData : IEmployeesData
         return employee.Id;
     }
 
-    bool Edit(Employee employee)
+    public bool Edit(Employee employee)
     {
         if (employee is null)
             throw new ArgumentNullException(nameof(employee));
 
         //удалить потом, только для данного сервиса
         if (_Employees.Contains(employee))
-            return employee.Id;
+            return true;
 
         var db_employee = GetById(employee.Id);
         if (db_employee is null)
@@ -63,24 +63,24 @@ public class InMemoryEmployeesData : IEmployeesData
         db_employee.Patronymic = employee.Patronymic;
         db_employee.Age = employee.Age;
 
-        //если сервис в БД, вызываем SaveChandges()
+        //если сервис в БД, вызываем SaveChanges()
 
-        _Logger.LogInformation("Сотрудник с id:{0} добавлен.", employee.Id);
+        _Logger.LogInformation("Сотрудник (id:{0}){1} добавлен.", employee.Id, employee);
 
         return true;
     }
 
-    bool Delete(int id)
+    public bool Delete(int id)
     {
         var db_employee = GetById(id);
         if (db_employee is null)
         {
-            _Logger.LogWarning("Попытка удаления несуществующего сотрудника с id:{0}", employee.Id);
+            _Logger.LogWarning("Попытка удаления несуществующего сотрудника с id:{0}", id);
             return false;
         }
         
         _Employees.Remove(db_employee);
-        _Logger.LogInformation("Сотрудник (id:{0)){1) удалён.", employee.Id, Employee);
+        _Logger.LogInformation("Сотрудник c id:{0}) удалён.", id);
 
         return true;
     }

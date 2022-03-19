@@ -1,12 +1,19 @@
 using WebStore.Infrastructure.Conventions;
 using WebStore.Infrastructure.Middleware;
+using WebStore.Services;
+using WebStore.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//регистрация сервисов
+var services = builder.Services;
 builder.Services.AddControllersWithViews( opt =>
 {
     opt.Conventions.Add(new TestConvention());
 });
 
+
+services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
 
 var app = builder.Build();
 

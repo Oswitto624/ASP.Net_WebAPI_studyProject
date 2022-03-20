@@ -1,10 +1,10 @@
 ﻿using System.Text;
+using WebStore.Domain.Entities.Base;
 
 namespace WebStore.Domain.Entities
 {
-    public class Employee
+    public class Employee : Entity
     {
-        public int Id { get; set; }
         public string LastName { get; set; } = null!;
         public string FirstName { get; set; } = null!;
         public string? Patronymic { get; set; }

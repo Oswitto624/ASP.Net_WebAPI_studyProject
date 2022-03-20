@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace WebStore.Models
+namespace WebStore.Domain.Entities
 {
     public class Employee
     {

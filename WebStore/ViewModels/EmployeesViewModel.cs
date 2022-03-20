@@ -23,11 +23,11 @@ public class EmployeesViewModel : IValidatableObject
     [Display(Name = "Отчество")]
     [StringLength(255, ErrorMessage = "Длина отчества должна быть до 255 символов!")]
     [RegularExpression(@"(([А-ЯЁ][а-яё]+)|([A-Z][a-z]+))?", ErrorMessage = "Ошибка формата строки")]
-    public string Patronymic { get; set; }
+    public string? Patronymic { get; set; }
 
     [Display(Name = "ФИО")]
     [StringLength(255, ErrorMessage = "Длина ФИО должна быть до 255 символов!")]
-    public string ShortName { get; set; }
+    public string? ShortName { get; set; }
 
     [Display(Name = "Возраст")]
     [Range(18,80,ErrorMessage ="Возраст должен быть в пределах от 18 до 80 лет!")]

@@ -15,4 +15,12 @@
 	  <PackageReference Include="QRCoder" Version="1.4.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WebStore.Domain\WebStore.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

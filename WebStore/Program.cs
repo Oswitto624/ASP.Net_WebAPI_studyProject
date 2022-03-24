@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using WebStore.DAL.Context;
 using WebStore.Infrastructure.Conventions;
 using WebStore.Infrastructure.Middleware;
 using WebStore.Services;
+using WebStore.Services.InMemory;
+using WebStore.Services.InSQL;
 using WebStore.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +16,22 @@ builder.Services.AddControllersWithViews( opt =>
     opt.Conventions.Add(new TestConvention());
 });
 
+var configuration = builder.Configuration;
+services.AddDbContext<WebStoreDB> (opt => opt.UseSqlServer(configuration.GetConnectionString("SqlServer")));
+
+services.AddTransient<IDbInitializer, DbInitializer>();
 
 services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
-services.AddScoped<IProductData, InMemoryProductData>();
-
+//services.AddScoped<IProductData, InMemoryProductData>();
+services.AddScoped<IProductData, SqlProductData>();
 
 var app = builder.Build();
+
+using(var scope = app.Services.CreateScope())
+{
+    var db_initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+    await db_initializer.InitializeAsync(RemoveBefore: true);
+}
 
 if (app.Environment.IsDevelopment())
 {

@@ -15,7 +15,7 @@ builder.Services.AddControllersWithViews( opt =>
 });
 
 var configuration = builder.Configuration;
-services.AddDbContext<WebStoreDB> (opt => opt.UseSqlServer(configuration.GetConnectionString("SqlServer"));
+services.AddDbContext<WebStoreDB> (opt => opt.UseSqlServer(configuration.GetConnectionString("SqlServer")));
 
 services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
 services.AddScoped<IProductData, InMemoryProductData>();

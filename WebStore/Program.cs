@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using WebStore.DAL.Context;
 using WebStore.Infrastructure.Conventions;
 using WebStore.Infrastructure.Middleware;
 using WebStore.Services;
@@ -12,6 +14,8 @@ builder.Services.AddControllersWithViews( opt =>
     opt.Conventions.Add(new TestConvention());
 });
 
+var configuration = builder.Configuration;
+services.AddDbContext<WebStoreDB> (opt => opt.UseSqlServer(configuration.GetConnectionString("SqlServer"));
 
 services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
 services.AddScoped<IProductData, InMemoryProductData>();

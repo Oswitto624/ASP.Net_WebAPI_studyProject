@@ -22,8 +22,8 @@ services.AddDbContext<WebStoreDB> (opt => opt.UseSqlServer(configuration.GetConn
 services.AddTransient<IDbInitializer, DbInitializer>();
 
 services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
-services.AddScoped<IProductData, InMemoryProductData>();
-
+//services.AddScoped<IProductData, InMemoryProductData>();
+services.AddScoped<IProductData, SqlProductData>();
 
 var app = builder.Build();
 

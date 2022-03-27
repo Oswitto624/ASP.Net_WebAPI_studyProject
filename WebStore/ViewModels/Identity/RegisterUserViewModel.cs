@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebStore.ViewModels;
+namespace WebStore.ViewModels.Identity;
 
 public class RegisterUserViewModel
 {
@@ -17,5 +17,5 @@ public class RegisterUserViewModel
     [Display(Name = "Подтверждение пароля")]
     [DataType(DataType.Password)]
     public string PasswordConfirm { get; set; }
-    
+
 }

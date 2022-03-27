@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WebStore.Domain.Entities;
 
 namespace WebStore.DAL.Context;
 
-public class WebStoreDB : DbContext
+public class WebStoreDB : IdentityDbContext
 {
     public DbSet<Product> Products { get; set; }
     

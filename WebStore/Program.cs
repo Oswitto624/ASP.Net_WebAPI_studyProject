@@ -16,7 +16,9 @@ builder.Services.AddControllersWithViews( opt =>
 });
 
 var configuration = builder.Configuration;
-services.AddDbContext<WebStoreDB> (opt => opt.UseSqlServer(configuration.GetConnectionString("SqlServer")));
+var db_connection_string_name = configuration["Database"];
+var db_connection_string = configuration.GetConnectionString(db_connection_string_name);
+services.AddDbContext<WebStoreDB> (opt => opt.UseSqlServer(db_connection_string));
 
 services.AddTransient<IDbInitializer, DbInitializer>();
 

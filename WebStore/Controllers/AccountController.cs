@@ -24,17 +24,38 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Register(RegisterUserViewModel model)
+    public async Task<IActionResult> Register(RegisterUserViewModel model)
     {
-        return RedirectToAction("Index", "Home");
+        if(!ModelState.IsValid)
+            return View(model);
+
+        var user = new User
+        {
+            UserName = model.UserName,
+        };
+
+        var creation_result = await _UserManager.CreateAsync(user, model.Password);
+
+        if (creation_result.Succeeded)
+        {
+            await _SignInManager.SignInAsync(user, false);
+            return RedirectToAction("Index", "Home");
+        }
+        foreach (var error in creation_result.Errors)
+            ModelState.AddModelError("", error.Description);
+
+        return View(model);
     }
 
     public IActionResult Login(string ReturnUrl) => View(new LoginViewModel { ReturnUrl = ReturnUrl});
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
+        if (ModelState.IsValid)
+            return View(model);
+
         return RedirectToAction("Index", "Home");
     }
 

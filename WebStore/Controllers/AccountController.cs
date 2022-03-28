@@ -56,7 +56,34 @@ public class AccountController : Controller
         if (ModelState.IsValid)
             return View(model);
 
-        return RedirectToAction("Index", "Home");
+        var login_result = await _SignInManager.PasswordSignInAsync(
+            model.UserName,
+            model.Password,
+            model.RememberMe,
+            true);
+
+        if (login_result.Succeeded)
+        {
+            //return Redirect("Index", "Home"); //не безопасно
+
+            //if(Url.IsLocalUrl(model.ReturnUrl))
+            //    return Redirect(model.ReturnUrl);
+            //return RedirectToAction("Index", "Home");
+
+            return LocalRedirect(model.ReturnUrl ?? "/");
+        }
+        //else if (login_result.RequiresTwoFactor)
+        //{
+        //    //выполнение двухфакторной проверки
+        //}
+        //else if (!login_result.IsLockedOut)
+        //{
+        //    //отправить пользователю информацию о том что он заблокирован
+        //}
+
+        ModelState.AddModelError("", "Неверное имя пользователя или пароль!");
+
+        return View(model);
     }
 
     public async Task<IActionResult> Logout()

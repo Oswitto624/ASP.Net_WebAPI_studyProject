@@ -23,6 +23,7 @@ public class AccountController : Controller
     public IActionResult Register() => View(new RegisterUserViewModel());
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Register(RegisterUserViewModel model)
     {
         return RedirectToAction("Index", "Home");
@@ -31,6 +32,7 @@ public class AccountController : Controller
     public IActionResult Login(string ReturnUrl) => View(new LoginViewModel { ReturnUrl = ReturnUrl});
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Login(LoginViewModel model)
     {
         return RedirectToAction("Index", "Home");

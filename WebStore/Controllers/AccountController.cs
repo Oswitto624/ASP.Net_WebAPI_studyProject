@@ -60,7 +60,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel Model)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
             return View(Model);
 
         var login_result = await _SignInManager.PasswordSignInAsync(

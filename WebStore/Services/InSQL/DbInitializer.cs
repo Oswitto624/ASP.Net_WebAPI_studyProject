@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebStore.DAL.Context;
 using WebStore.Data;
+using WebStore.Domain.Entities.Identity;
 using WebStore.Services.Interfaces;
 
 namespace WebStore.Services.InSQL;
@@ -8,11 +10,19 @@ namespace WebStore.Services.InSQL;
 public class DbInitializer : IDbInitializer
 {
     private readonly WebStoreDB _db;
+    private readonly UserManager<User> _UserManager;
+    private readonly RoleManager<Role> _RoleManager;
     private readonly ILogger<DbInitializer> _Logger;
 
-    public DbInitializer(WebStoreDB db, ILogger<DbInitializer> Logger)
+    public DbInitializer(
+        WebStoreDB db, 
+        UserManager<User> UserManager,
+        RoleManager<Role> RoleManager,
+        ILogger<DbInitializer> Logger)
     {
         _db = db;
+        _UserManager = UserManager;
+        _RoleManager = RoleManager;
         _Logger = Logger;
     }
 
@@ -49,6 +59,8 @@ public class DbInitializer : IDbInitializer
         
         await InitializeProductsAsync(Cancel).ConfigureAwait(false);
         
+        await InitializeIdentityAsync(Cancel).ConfigureAwait(false);
+
         _Logger.LogInformation("Инициализация БД выполнена успешно.");
 
     }
@@ -105,5 +117,53 @@ public class DbInitializer : IDbInitializer
 
     }
 
+    private async Task InitializeIdentityAsync(CancellationToken Cancel)
+    {
+        async Task CheckRoleAsync(string RoleName)
+      {
+            if (await _RoleManager.RoleExistsAsync(RoleName))
+                _Logger.LogInformation("Роль {0} существует", RoleName);
+            else
+            {
+                _Logger.LogInformation("Роль {0} не существует, создаю...", RoleName);
 
+                await _RoleManager.CreateAsync(new Role { Name = RoleName });
+
+                _Logger.LogInformation("Роль {0} успешно создана", RoleName);
+            }
+      }
+
+        await CheckRoleAsync(Role.Administrators);
+        await CheckRoleAsync(Role.Users);
+
+        if(await _UserManager.FindByNameAsync(User.Administrator) is null)
+        {
+            _Logger.LogInformation("Пользователь {0} не найден, создаю...", User.Administrator);
+
+            var admin = new User
+            {
+                UserName = User.Administrator,
+            };
+
+            var creation_result = await _UserManager.CreateAsync(admin, User.DefaultAdminPassword);
+            if (creation_result.Succeeded)
+            {
+                _Logger.LogInformation("Пользователь {0} создан успешно.", User.Administrator);
+                await _UserManager.AddToRoleAsync(admin, Role.Administrators);
+
+                _Logger.LogInformation("Пользователь {0} наделён ролью {1}.", User.Administrator, Role.Administrators);
+            }
+            else
+            {
+                var errors = creation_result.Errors.Select(e => e.Description);
+                _Logger.LogError("Учётная запись {0} не создана. Ошибки: {1}", 
+                    User.Administrator, 
+                    string.Join(", ", errors));
+                throw new InvalidOperationException($"Невозможно создать пользователя {User.Administrator} по причине {string.Join(", ", errors)}");
+            }
+        }
+        else
+            _Logger.LogInformation("Пользователь {0} существует", User.Administrator);
+
+    }
 }

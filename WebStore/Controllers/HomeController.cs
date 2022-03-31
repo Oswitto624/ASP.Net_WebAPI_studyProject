@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebStore.Infrastructure.Mapping;
 using WebStore.Services.Interfaces;
 using WebStore.ViewModels;
 
@@ -15,13 +16,7 @@ namespace WebStore.Controllers
             var products = ProductData.GetProducts()
                 .OrderBy(p => p.Order)
                 .Take(6)
-                .Select(p => new ProductViewModel
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    ImageUrl = p.ImageUrl,
-                });
+                .ToView();
 
             ViewBag.Products = products;
 

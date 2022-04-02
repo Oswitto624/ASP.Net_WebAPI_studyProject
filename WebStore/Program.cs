@@ -5,6 +5,7 @@ using WebStore.DAL.Context;
 using WebStore.Domain.Entities.Identity;
 using WebStore.Infrastructure.Conventions;
 using WebStore.Infrastructure.Middleware;
+using WebStore.Services;
 using WebStore.Services.InMemory;
 using WebStore.Services.InSQL;
 using WebStore.Services.Interfaces;
@@ -64,6 +65,7 @@ services.ConfigureApplicationCookie(opt =>
 services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
 //services.AddScoped<IProductData, InMemoryProductData>();
 services.AddScoped<IProductData, SqlProductData>();
+services.AddScoped<ICartService, InCookiesCartService>();
 
 //services.AddAutoMapper(Assembly.GetEntryAssembly());
 services.AddAutoMapper(typeof(Program));

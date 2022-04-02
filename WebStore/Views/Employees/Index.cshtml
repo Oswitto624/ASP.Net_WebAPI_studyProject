@@ -1,37 +1,49 @@
-﻿@model IEnumerable<WebStore.Domain.Entities.Employee>  
+﻿@using WebStore.Domain.Entities.Identity
+@model IEnumerable<WebStore.Domain.Entities.Employee>  
 
 <div class="container">
-    <p>
-        <a asp-action="Edit" class="btn btn-default">Создать работягу</a>
-        <a asp-action="Create" class="btn btn-default">Создать работягу2</a>
-    </p>
-
-    <hr />
+    @if (User.IsInRole(Role.Administrators))
+    {
+        <p>
+            <a asp-action="Edit" class="btn btn-default">Создать работягу</a>
+            <a asp-action="Create" class="btn btn-default">Создать работягу2</a>
+        </p>
+        <hr />
+    }
 
     @if (Model.Any())
     {
         <table class="table">
              <thead>
              <tr>
-                 <th></th>
+                 @if (User.IsInRole(Role.Administrators))
+                 {
+                     <th></th>
+                 }
                  <th>Id</th>
                  <th>Фамилия</th>
                  <th>Имя</th>
                  <th>Отчество</th>
                  <th>Возраст</th>
-                 <th></th>
-                 <th></th>
+                 <th>Ф.И.О.</th>
+                 @if (User.IsInRole(Role.Administrators))
+                 {
+                     <th></th>
+                 }
              </tr>
              </thead>
              <tbody>
            @foreach(var employee in Model)
            {
                <tr>
-                   <td>
-                        <form asp-action="DeleteConfirmed" asp-route-id="@employee.Id">
-                        <input type="submit" value="X" class="btn btn-danger btn-sm" /> 
-                    </form>
-                   </td>
+                   @if (User.IsInRole(Role.Administrators))
+                   {
+                        <td>
+                             <form asp-action="DeleteConfirmed" asp-route-id="@employee.Id">
+                             <input type="submit" value="X" class="btn btn-danger btn-sm" /> 
+                         </form>
+                        </td>                       
+                   }
                    <td>@employee.Id</td>
                    <td>@employee.LastName</td>
                    <td>@employee.FirstName</td>
@@ -40,14 +52,17 @@
                    <td>
                        <a asp-controller="Employees" asp-action="Details" asp-route-Id="@employee.Id">@employee.ShortName</a>
                    </td>
-                   <td>
-                        <a asp-action="Edit" asp-route-id="@employee.Id">
-                            <span class="fa fa-edit"></span>
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@employee.Id" class="text-danger">
-                            <span class="fa fa-times"></span>
-                        </a>
-                   </td>
+                   @if (User.IsInRole(Role.Administrators))
+                   {
+                       <td>
+                            <a asp-action="Edit" asp-route-id="@employee.Id">
+                                <span class="fa fa-edit"></span>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@employee.Id" class="text-danger">
+                                <span class="fa fa-times"></span>
+                            </a>
+                        </td>
+                   }
                </tr>
            }
             </tbody>

@@ -10,12 +10,15 @@
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
+	  <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+	  <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
 	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
 	  <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2" />
+	  <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.161" />
 	  <PackageReference Include="QRCoder" Version="1.4.3" />
   </ItemGroup>
 

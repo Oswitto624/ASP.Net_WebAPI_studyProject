@@ -6,6 +6,7 @@ using WebStore.ViewModels.Identity;
 
 namespace WebStore.Controllers;
 
+[Authorize]
 public class AccountController : Controller
 {
     private readonly UserManager<User> _UserManager;
@@ -21,10 +22,12 @@ public class AccountController : Controller
         _Logger = Logger;
     }
 
+    [AllowAnonymous]
     public IActionResult Register() => View(new RegisterUserViewModel());
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterUserViewModel Model)
     {
         if(!ModelState.IsValid)
@@ -54,13 +57,15 @@ public class AccountController : Controller
         return View(Model);
     }
 
+    [AllowAnonymous]
     public IActionResult Login(string ReturnUrl) => View(new LoginViewModel { ReturnUrl = ReturnUrl});
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [AllowAnonymous]
     public async Task<IActionResult> Login(LoginViewModel Model)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
             return View(Model);
 
         var login_result = await _SignInManager.PasswordSignInAsync(
@@ -107,6 +112,7 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    [AllowAnonymous]
     public IActionResult AccessDenied() => View();
 
 }

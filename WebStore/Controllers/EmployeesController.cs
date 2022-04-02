@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebStore.Domain.Entities;
+using WebStore.Domain.Entities.Identity;
 using WebStore.Services.Interfaces;
 using WebStore.ViewModels;
 
 namespace WebStore.Controllers;
 
 //[Route("Staff/{action=Index}/{id?}")]
+[Authorize]
 public class EmployeesController : Controller
 {
     private readonly IEmployeesData _EmployeesData;
@@ -34,11 +37,13 @@ public class EmployeesController : Controller
         return View(employee);
     }
 
+    [Authorize(Roles = Role.Administrators)]
     public IActionResult Create()
     {
         return View("Edit", new EmployeesViewModel());
     }
 
+    [Authorize(Roles = Role.Administrators)]
     public IActionResult Edit(int? Id)
     {
         if (Id is not { } id)
@@ -64,6 +69,7 @@ public class EmployeesController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = Role.Administrators)]
     public IActionResult Edit(EmployeesViewModel Model)
     {
         if (Model.LastName == "Иванов" && Model.Age < 21)
@@ -89,7 +95,7 @@ public class EmployeesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
+    [Authorize(Roles = Role.Administrators)]
     public IActionResult Delete(int id)
     {
         if(id<0)
@@ -113,6 +119,7 @@ public class EmployeesController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = Role.Administrators)]
     public IActionResult DeleteConfirmed(int Id) 
     {
         if (!_EmployeesData.Delete(Id))

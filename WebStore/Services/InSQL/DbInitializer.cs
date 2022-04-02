@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebStore.DAL.Context;
 using WebStore.Data;
+using WebStore.Domain.Entities.Identity;
 using WebStore.Services.Interfaces;
 
 namespace WebStore.Services.InSQL;
@@ -8,11 +10,19 @@ namespace WebStore.Services.InSQL;
 public class DbInitializer : IDbInitializer
 {
     private readonly WebStoreDB _db;
+    private readonly UserManager<User> _UserManager;
+    private readonly RoleManager<Role> _RoleManager;
     private readonly ILogger<DbInitializer> _Logger;
 
-    public DbInitializer(WebStoreDB db, ILogger<DbInitializer> Logger)
+    public DbInitializer(
+        WebStoreDB db, 
+        UserManager<User> UserManager,
+        RoleManager<Role> RoleManager,
+        ILogger<DbInitializer> Logger)
     {
         _db = db;
+        _UserManager = UserManager;
+        _RoleManager = RoleManager;
         _Logger = Logger;
     }
 
@@ -49,6 +59,8 @@ public class DbInitializer : IDbInitializer
         
         await InitializeProductsAsync(Cancel).ConfigureAwait(false);
         
+        await InitializeIdentityAsync(Cancel).ConfigureAwait(false);
+
         _Logger.LogInformation("Инициализация БД выполнена успешно.");
 
     }
@@ -63,41 +75,40 @@ public class DbInitializer : IDbInitializer
         }
         _Logger.LogInformation("Инициализация БД тестовыми данными...");
 
-        _Logger.LogInformation("Добавлений секций в БД...");
-        await using (var transaction = await _db.Database.BeginTransactionAsync(Cancel))
+        var sections_pool = TestData.Sections.ToDictionary(s => s.Id);
+        var brands_pool = TestData.Brands.ToDictionary(b => b.Id);
+
+        foreach (var child_section in TestData.Sections.Where(s=>s.ParentId is not null))
+            child_section.Parent = sections_pool[(int)child_section.ParentId!];
+
+        foreach (var product in TestData.Products)
         {
-            await _db.Sections.AddRangeAsync(TestData.Sections, Cancel).ConfigureAwait(false);
+            product.Section = sections_pool[product.SectionId];
+            if (product.BrandId is { } brand_id)
+                product.Brand = brands_pool[brand_id];
 
-            await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Sections] ON", Cancel).ConfigureAwait(false);
-            
-            await _db.SaveChangesAsync(Cancel).ConfigureAwait(false);
-            await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Sections] OFF", Cancel).ConfigureAwait(false);
-
-            await transaction.CommitAsync(Cancel).ConfigureAwait(false);
+            product.Id = 0;
+            product.SectionId = 0;
+            product.BrandId = null;
         }
 
-        _Logger.LogInformation("Добавлений брендов в БД...");
-        await using (var transaction = await _db.Database.BeginTransactionAsync(Cancel))
+        foreach(var brand in TestData.Brands)
+            brand.Id = 0;
+
+        foreach(var section in TestData.Sections)
         {
-            await _db.Brands.AddRangeAsync(TestData.Brands, Cancel).ConfigureAwait(false);
-
-            await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Brands] ON", Cancel).ConfigureAwait(false);
-
-            await _db.SaveChangesAsync(Cancel).ConfigureAwait(false);
-            await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Brands] OFF", Cancel).ConfigureAwait(false);
-
-            await transaction.CommitAsync(Cancel).ConfigureAwait(false);
+            section.Id = 0;
+            section.ParentId = null;
         }
 
-        _Logger.LogInformation("Добавлений товаров в БД...");
+        _Logger.LogInformation("Добавлений данных в БД...");
         await using (var transaction = await _db.Database.BeginTransactionAsync(Cancel))
         {
-            await _db.Products.AddRangeAsync(TestData.Products, Cancel).ConfigureAwait(false);
+            await _db.Sections.AddRangeAsync(TestData.Sections, Cancel);
+            await _db.Brands.AddRangeAsync(TestData.Brands, Cancel);
+            await _db.Products.AddRangeAsync(TestData.Products, Cancel);
 
-            await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Products] ON", Cancel).ConfigureAwait(false);
-
-            await _db.SaveChangesAsync(Cancel).ConfigureAwait(false);
-            await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Products] OFF", Cancel).ConfigureAwait(false);
+            await _db.SaveChangesAsync(Cancel);
 
             await transaction.CommitAsync(Cancel).ConfigureAwait(false);
         }
@@ -106,5 +117,53 @@ public class DbInitializer : IDbInitializer
 
     }
 
+    private async Task InitializeIdentityAsync(CancellationToken Cancel)
+    {
+        async Task CheckRoleAsync(string RoleName)
+      {
+            if (await _RoleManager.RoleExistsAsync(RoleName))
+                _Logger.LogInformation("Роль {0} существует", RoleName);
+            else
+            {
+                _Logger.LogInformation("Роль {0} не существует, создаю...", RoleName);
 
+                await _RoleManager.CreateAsync(new Role { Name = RoleName });
+
+                _Logger.LogInformation("Роль {0} успешно создана", RoleName);
+            }
+      }
+
+        await CheckRoleAsync(Role.Administrators);
+        await CheckRoleAsync(Role.Users);
+
+        if(await _UserManager.FindByNameAsync(User.Administrator) is null)
+        {
+            _Logger.LogInformation("Пользователь {0} не найден, создаю...", User.Administrator);
+
+            var admin = new User
+            {
+                UserName = User.Administrator,
+            };
+
+            var creation_result = await _UserManager.CreateAsync(admin, User.DefaultAdminPassword);
+            if (creation_result.Succeeded)
+            {
+                _Logger.LogInformation("Пользователь {0} создан успешно.", User.Administrator);
+                await _UserManager.AddToRoleAsync(admin, Role.Administrators);
+
+                _Logger.LogInformation("Пользователь {0} наделён ролью {1}.", User.Administrator, Role.Administrators);
+            }
+            else
+            {
+                var errors = creation_result.Errors.Select(e => e.Description);
+                _Logger.LogError("Учётная запись {0} не создана. Ошибки: {1}", 
+                    User.Administrator, 
+                    string.Join(", ", errors));
+                throw new InvalidOperationException($"Невозможно создать пользователя {User.Administrator} по причине {string.Join(", ", errors)}");
+            }
+        }
+        else
+            _Logger.LogInformation("Пользователь {0} существует", User.Administrator);
+
+    }
 }

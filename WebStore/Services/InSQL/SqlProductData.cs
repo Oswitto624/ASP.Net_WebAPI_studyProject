@@ -30,11 +30,16 @@ public class SqlProductData : IProductData
         //if (Filter != null && Filter.SectionId != null)
         //    query = query.Where(p => p.SectionId == Filter.SectionId);
 
-        if (Filter?.SectionId is { } section_id)
-            query = query.Where(p => p.SectionId == Filter.SectionId);
+        if(Filter?.Ids?.Length > 0)
+            query = query.Where(product => Filter.Ids.Contains(product.Id));        
+        else
+        {
+            if (Filter?.SectionId is { } section_id)
+                query = query.Where(p => p.SectionId == Filter.SectionId);
 
-        if (Filter?.BrandId is { } brand_id)
-            query = query.Where(p => p.BrandId == Filter.BrandId);
+            if (Filter?.BrandId is { } brand_id)
+                query = query.Where(p => p.BrandId == Filter.BrandId);
+        }
 
         return query;
     }

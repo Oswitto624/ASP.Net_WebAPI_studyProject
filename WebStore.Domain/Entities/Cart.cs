@@ -8,6 +8,8 @@ public class Cart
 
 public class CartItem
 {
+    public object quantity;
+
     public int ProductId { get; set; }
     public int Quantity { get; set; } = 1;
 }

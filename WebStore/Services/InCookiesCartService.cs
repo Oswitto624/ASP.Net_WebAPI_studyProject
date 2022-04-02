@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using WebStore.Domain.Entities;
+using WebStore.Infrastructure.Mapping;
 using WebStore.Services.Interfaces;
 using WebStore.ViewModels;
 
@@ -101,7 +102,21 @@ public class InCookiesCartService : ICartService
 
     public CartViewModel GetViewModel()
     {
-       
+        var cart = Cart;
+
+        var products = _ProductData.GetProducts(new()
+        {
+            Ids = cart.Items.Select(i => i.ProductId).ToArray()
+        });
+
+        var products_views = products.ToView().ToDictionary(p => p!.Id);
+
+        return new()
+        {
+            Items = cart.Items
+            .Where(item => products_views.ContainsKey(item.ProductId))
+            .Select(item => (products_views[item.ProductId], item.Quantity))!,
+        };
     }
 
 }

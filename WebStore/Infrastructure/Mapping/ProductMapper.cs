@@ -13,6 +13,8 @@ public static class ProductMapper
             Name = product.Name,
             Price = product.Price,
             ImageUrl = product.ImageUrl,
+            Section = product.Section.Name,
+            Brand = product.Brand?.Name,
         };
 
     public static Product? FromView(this ProductViewModel? product) => product is null

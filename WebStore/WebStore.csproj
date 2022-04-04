@@ -31,4 +31,8 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Areas\Admin\Views\Products\Index.cshtml" />
+  </ItemGroup>
+
 </Project>

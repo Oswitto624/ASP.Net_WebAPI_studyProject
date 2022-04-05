@@ -101,7 +101,7 @@ app.MapGet("/throw", () =>
 
 app.MapGet("/greetings", () => app.Configuration["ServerGreetings"]);
 
-app.MapDefaultControllerRoute();
+//app.MapDefaultControllerRoute();
 
 app.UseMiddleware<TestMiddleware>();
 

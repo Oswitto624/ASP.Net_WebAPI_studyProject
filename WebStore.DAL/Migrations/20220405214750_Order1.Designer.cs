@@ -12,8 +12,8 @@ using WebStore.DAL.Context;
 namespace WebStore.DAL.Migrations
 {
     [DbContext(typeof(WebStoreDB))]
-    [Migration("20220405194913_Orders")]
-    partial class Orders
+    [Migration("20220405214750_Order1")]
+    partial class Order1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -292,7 +292,7 @@ namespace WebStore.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");

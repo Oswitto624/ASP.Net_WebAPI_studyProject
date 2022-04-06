@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <None Include="Areas\Admin\Views\Products\Index.cshtml" />
+    <None Include="Views\UserProfile\Index.cshtml" />
   </ItemGroup>
 
 </Project>

@@ -10,5 +10,6 @@ services:
   webstore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Database=DockerDB
     ports:
       - "80"

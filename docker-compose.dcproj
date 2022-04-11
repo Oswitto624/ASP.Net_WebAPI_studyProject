@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>a823dc47-cbee-4c49-8cd8-27d7136bf2d7</ProjectGuid>
+    <ProjectGuid>e59ba40b-b4ec-4bcc-83c3-2a3a12bf1c3b</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
     <DockerServiceName>webstore</DockerServiceName>

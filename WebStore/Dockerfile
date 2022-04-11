@@ -7,8 +7,9 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["WebStore/WebStore.csproj", "WebStore/"]
-COPY ["WebStore.Domain/WebStore.Domain.csproj", "WebStore.Domain/"]
+COPY ["WebStore.DAL.Sqlite/WebStore.DAL.Sqlite.csproj", "WebStore.DAL.Sqlite/"]
 COPY ["WebStore.DAL/WebStore.DAL.csproj", "WebStore.DAL/"]
+COPY ["WebStore.Domain/WebStore.Domain.csproj", "WebStore.Domain/"]
 RUN dotnet restore "WebStore/WebStore.csproj"
 COPY . .
 WORKDIR "/src/WebStore"

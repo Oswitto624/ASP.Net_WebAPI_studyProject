@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using WebStore.Data;
 using WebStore.Domain.Entities;
-using WebStore.Services.Interfaces;
+using WebStore.Interfaces.Services;
+using WebStore.Services.Data;
 
-namespace WebStore.Services.InMemory;
+namespace WebStore.Services.Services.InMemory;
 
 public class InMemoryEmployeesData : IEmployeesData
 {
@@ -31,7 +31,7 @@ public class InMemoryEmployeesData : IEmployeesData
 
     public int Add(Employee employee)
     {
-        if(employee is null)
+        if (employee is null)
             throw new ArgumentNullException(nameof(employee));
 
         //удалить потом, только для данного сервиса
@@ -79,7 +79,7 @@ public class InMemoryEmployeesData : IEmployeesData
             _Logger.LogWarning("Попытка удаления несуществующего сотрудника с id:{0}", id);
             return false;
         }
-        
+
         _Employees.Remove(db_employee);
         _Logger.LogInformation("Сотрудник c id:{0}) удалён.", id);
 

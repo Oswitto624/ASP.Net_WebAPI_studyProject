@@ -2,11 +2,11 @@
 
 using Newtonsoft.Json;
 using WebStore.Domain.Entities;
-using WebStore.Infrastructure.Mapping;
-using WebStore.Services.Interfaces;
-using WebStore.ViewModels;
+using WebStore.Domain.ViewModels;
+using WebStore.Interfaces.Services;
+using WebStore.Services.Mapping;
 
-namespace WebStore.Services;
+namespace WebStore.Services.Services;
 
 public class InCookiesCartService : ICartService
 {
@@ -46,7 +46,7 @@ public class InCookiesCartService : ICartService
         _ProductData = ProductData;
 
         var user = _HttpContextAccessor.HttpContext!.User;
-        var user_name = user.Identity!.IsAuthenticated ? $"-{user.Identity.Name}" : null ;
+        var user_name = user.Identity!.IsAuthenticated ? $"-{user.Identity.Name}" : null;
         _CartName = $"WebStore.GB.Cart{user_name}";
     }
 
@@ -96,7 +96,7 @@ public class InCookiesCartService : ICartService
 
         var cart = Cart;
 
-        cart.Items.Clear(); 
+        cart.Items.Clear();
 
         Cart = cart;
     }

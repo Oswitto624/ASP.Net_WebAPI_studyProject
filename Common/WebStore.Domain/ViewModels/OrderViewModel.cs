@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebStore.ViewModels;
+namespace WebStore.Domain.ViewModels;
 
 public class OrderViewModel
 {
     [Required]
     public string Address { get; set; } = null!;
-    
+
     [Required]
     [MaxLength(200)]
     public string Phone { get; set; } = null!;

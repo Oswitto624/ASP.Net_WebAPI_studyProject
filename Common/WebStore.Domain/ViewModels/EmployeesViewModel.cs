@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebStore.ViewModels;
+namespace WebStore.Domain.ViewModels;
 
 public class EmployeesViewModel : IValidatableObject
 {
@@ -10,7 +10,7 @@ public class EmployeesViewModel : IValidatableObject
 
     [Display(Name = "Фамилия")]
     [Required(ErrorMessage = "Фамилия является обязательной!")]
-    [StringLength(255, MinimumLength =2, ErrorMessage = "Длина фамилии должна быть от 2 до 255 символов!")]
+    [StringLength(255, MinimumLength = 2, ErrorMessage = "Длина фамилии должна быть от 2 до 255 символов!")]
     [RegularExpression(@"([А-ЯЁ][а-яё]+)|([A-Z][a-z]+)", ErrorMessage = "Ошибка формата строки")]
     public string LastName { get; set; }
 
@@ -30,13 +30,13 @@ public class EmployeesViewModel : IValidatableObject
     public string? ShortName { get; set; }
 
     [Display(Name = "Возраст")]
-    [Range(18,80,ErrorMessage ="Возраст должен быть в пределах от 18 до 80 лет!")]
+    [Range(18, 80, ErrorMessage = "Возраст должен быть в пределах от 18 до 80 лет!")]
     public int Age { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext Context)
     {
         if (LastName.Length > 20)
-            yield return new ValidationResult("Длина фамилии превысила 20 символов", new[] {nameof(LastName)});
+            yield return new ValidationResult("Длина фамилии превысила 20 символов", new[] { nameof(LastName) });
 
         yield return ValidationResult.Success!;
     }

@@ -4,10 +4,10 @@ using Microsoft.Extensions.Logging;
 using WebStore.DAL.Context;
 using WebStore.Domain.Entities.Identity;
 using WebStore.Domain.Entities.Orders;
-using WebStore.Services.Interfaces;
-using WebStore.ViewModels;
+using WebStore.Domain.ViewModels;
+using WebStore.Interfaces.Services;
 
-namespace WebStore.Services.InSQL;
+namespace WebStore.Services.Services.InSQL;
 
 public class SqlOrderService : IOrderService
 {
@@ -40,15 +40,15 @@ public class SqlOrderService : IOrderService
                     .Include(o => o.User)
                     .Include(o => o.Items)
                     .ThenInclude(item => item.Product)
-                    .FirstOrDefaultAsync(o=>o.Id == Id, Cancel)
+                    .FirstOrDefaultAsync(o => o.Id == Id, Cancel)
                     .ConfigureAwait(false);
         return order;
     }
 
     public async Task<Order> CreateOrderAsync(
-        string UserName, 
-        CartViewModel Cart, 
-        OrderViewModel OrderModel, 
+        string UserName,
+        CartViewModel Cart,
+        OrderViewModel OrderModel,
         CancellationToken Cancel = default)
     {
         var user = await _UserManager.FindByNameAsync(UserName).ConfigureAwait(false);

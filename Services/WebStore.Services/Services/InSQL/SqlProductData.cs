@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 using WebStore.DAL.Context;
 using WebStore.Domain;
 using WebStore.Domain.Entities;
-using WebStore.Services.Interfaces;
+using WebStore.Interfaces.Services;
 
-namespace WebStore.Services.InSQL;
+namespace WebStore.Services.Services.InSQL;
 
 public class SqlProductData : IProductData
 {
@@ -18,7 +18,7 @@ public class SqlProductData : IProductData
         _Logger = Logger;
     }
 
-    public IEnumerable<Section> GetSections() => _db.Sections; 
+    public IEnumerable<Section> GetSections() => _db.Sections;
 
     public IEnumerable<Brand> GetBrands() => _db.Brands;
 
@@ -31,8 +31,8 @@ public class SqlProductData : IProductData
         //if (Filter != null && Filter.SectionId != null)
         //    query = query.Where(p => p.SectionId == Filter.SectionId);
 
-        if(Filter?.Ids?.Length > 0)
-            query = query.Where(product => Filter.Ids.Contains(product.Id));        
+        if (Filter?.Ids?.Length > 0)
+            query = query.Where(product => Filter.Ids.Contains(product.Id));
         else
         {
             if (Filter?.SectionId is { } section_id)

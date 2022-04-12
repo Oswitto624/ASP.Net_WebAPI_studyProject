@@ -2,11 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebStore.DAL.Context;
-using WebStore.Data;
 using WebStore.Domain.Entities.Identity;
-using WebStore.Services.Interfaces;
+using WebStore.Interfaces.Services;
+using WebStore.Services.Data;
 
-namespace WebStore.Services.InSQL;
+namespace WebStore.Services.Services.InSQL;
 
 public class DbInitializer : IDbInitializer
 {
@@ -16,7 +16,7 @@ public class DbInitializer : IDbInitializer
     private readonly ILogger<DbInitializer> _Logger;
 
     public DbInitializer(
-        WebStoreDB db, 
+        WebStoreDB db,
         UserManager<User> UserManager,
         RoleManager<Role> RoleManager,
         ILogger<DbInitializer> Logger)
@@ -43,7 +43,7 @@ public class DbInitializer : IDbInitializer
     {
         _Logger.LogInformation("Инициализация БД..");
 
-        if(RemoveBefore)
+        if (RemoveBefore)
             await RemoveAsync(Cancel).ConfigureAwait(false);
 
         //await _db.Database.EnsureCreatedAsync(Cancel).ConfigureAwait(false);
@@ -57,9 +57,9 @@ public class DbInitializer : IDbInitializer
         }
         else
             _Logger.LogInformation("Миграция БД не требуется");
-        
+
         await InitializeProductsAsync(Cancel).ConfigureAwait(false);
-        
+
         await InitializeIdentityAsync(Cancel).ConfigureAwait(false);
 
         _Logger.LogInformation("Инициализация БД выполнена успешно.");
@@ -79,7 +79,7 @@ public class DbInitializer : IDbInitializer
         var sections_pool = TestData.Sections.ToDictionary(s => s.Id);
         var brands_pool = TestData.Brands.ToDictionary(b => b.Id);
 
-        foreach (var child_section in TestData.Sections.Where(s=>s.ParentId is not null))
+        foreach (var child_section in TestData.Sections.Where(s => s.ParentId is not null))
             child_section.Parent = sections_pool[(int)child_section.ParentId!];
 
         foreach (var product in TestData.Products)
@@ -93,10 +93,10 @@ public class DbInitializer : IDbInitializer
             product.BrandId = null;
         }
 
-        foreach(var brand in TestData.Brands)
+        foreach (var brand in TestData.Brands)
             brand.Id = 0;
 
-        foreach(var section in TestData.Sections)
+        foreach (var section in TestData.Sections)
         {
             section.Id = 0;
             section.ParentId = null;
@@ -121,7 +121,7 @@ public class DbInitializer : IDbInitializer
     private async Task InitializeIdentityAsync(CancellationToken Cancel)
     {
         async Task CheckRoleAsync(string RoleName)
-      {
+        {
             if (await _RoleManager.RoleExistsAsync(RoleName))
                 _Logger.LogInformation("Роль {0} существует", RoleName);
             else
@@ -132,12 +132,12 @@ public class DbInitializer : IDbInitializer
 
                 _Logger.LogInformation("Роль {0} успешно создана", RoleName);
             }
-      }
+        }
 
         await CheckRoleAsync(Role.Administrators);
         await CheckRoleAsync(Role.Users);
 
-        if(await _UserManager.FindByNameAsync(User.Administrator) is null)
+        if (await _UserManager.FindByNameAsync(User.Administrator) is null)
         {
             _Logger.LogInformation("Пользователь {0} не найден, создаю...", User.Administrator);
 
@@ -157,8 +157,8 @@ public class DbInitializer : IDbInitializer
             else
             {
                 var errors = creation_result.Errors.Select(e => e.Description);
-                _Logger.LogError("Учётная запись {0} не создана. Ошибки: {1}", 
-                    User.Administrator, 
+                _Logger.LogError("Учётная запись {0} не создана. Ошибки: {1}",
+                    User.Administrator,
                     string.Join(", ", errors));
                 throw new InvalidOperationException($"Невозможно создать пользователя {User.Administrator} по причине {string.Join(", ", errors)}");
             }

@@ -5,10 +5,10 @@ using WebStore.DAL.Context;
 using WebStore.Domain.Entities.Identity;
 using WebStore.Infrastructure.Conventions;
 using WebStore.Infrastructure.Middleware;
-using WebStore.Services;
-using WebStore.Services.InMemory;
-using WebStore.Services.InSQL;
-using WebStore.Services.Interfaces;
+using WebStore.Interfaces.Services;
+using WebStore.Services.Services;
+using WebStore.Services.Services.InMemory;
+using WebStore.Services.Services.InSQL;
 
 var builder = WebApplication.CreateBuilder(args);
 

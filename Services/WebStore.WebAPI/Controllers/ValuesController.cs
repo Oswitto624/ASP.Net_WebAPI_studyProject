@@ -18,15 +18,15 @@ namespace WebStore.WebAPI.Controllers
         [HttpGet]
         public IEnumerable<string> GetAll() => _Values.Values;
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [HttpGet("{Id}")]
+        public IActionResult GetById(int Id)
         {
             //if(!_Values.ContainsKey(id))
             //    return NotFound();
 
             //return Ok(_Values[id]);
 
-            if(_Values.TryGetValue(id, out var value))
+            if(_Values.TryGetValue(Id, out var value))
                 return Ok(value);
             return NotFound();
         }
@@ -40,10 +40,10 @@ namespace WebStore.WebAPI.Controllers
         {
             var id = _Values.Count == 0 ? 1 : _Values.Keys.Max() + 1;
             _Values[id] = Value;
-            return CreatedAtAction(nameof(GetById), new { id }, Value);
+            return CreatedAtAction(nameof(GetById), new { Id = id }, Value);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{Id}")]
         public IActionResult Edit(int Id, [FromBody] string Value)
         {
             if(!_Values.ContainsKey(Id))

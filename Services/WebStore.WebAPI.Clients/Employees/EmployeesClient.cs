@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 using WebStore.Domain.Entities;
 using WebStore.Interfaces.Services;
 using WebStore.WebAPI.Clients.Base;
@@ -15,28 +16,47 @@ public class EmployeesClient : BaseClient, IEmployeesData
         _Logger = Logger;
     }
 
-    public int Add(Employee employee)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Delete(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Edit(Employee employee)
-    {
-        throw new NotImplementedException();
-    }
-
     public IEnumerable<Employee> GetAll()
     {
-        throw new NotImplementedException();
+        var employees = Get<IEnumerable<Employee>>(Address);
+        return employees ?? Enumerable.Empty<Employee>();
     }
 
     public Employee? GetById(int id)
     {
-        throw new NotImplementedException();
+        var employee = Get<Employee>($"{Address}/{id}");
+        return employee;
     }
+
+    public int Add(Employee employee)
+    {
+        var response = Post(Address, employee);
+        var added_employee = response.Content.ReadFromJsonAsync<Employee>().Result;
+        if (added_employee is null)
+            return -1;
+
+        var id = added_employee.Id;
+        employee.Id = id;
+        return id;
+    }
+
+    public bool Edit(Employee employee)
+    {
+        var response = Put(Address, employee);
+        var success = response
+            .EnsureSuccessStatusCode()
+            .Content
+            .ReadFromJsonAsync<bool>()
+            .Result;
+        return success;
+    }
+
+    public bool Delete(int Id)
+    {
+        var response = Delete("{Address}/{Id}");
+        var success = response.IsSuccessStatusCode;
+        return success;
+    }
+
+
 }

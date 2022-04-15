@@ -22,15 +22,21 @@ public abstract class BaseClient
         
         response.EnsureSuccessStatusCode();
 
-        if (response.StatusCode == HttpStatusCode.NoContent)
-            return default;
-
-        var result = await response
-            .EnsureSuccessStatusCode()
-            .Content
-            .ReadFromJsonAsync<T>()
-            .ConfigureAwait(false);
-        return result;
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.NoContent:
+            case HttpStatusCode.NotFound:
+                return default;
+            default:
+                {
+                    var result = await response
+                        .EnsureSuccessStatusCode()
+                        .Content
+                        .ReadFromJsonAsync<T>()
+                        .ConfigureAwait(false);
+                    return result;
+                }
+        }
     }
 
     protected HttpResponseMessage Post<T>(string url, T value) => PostAsync<T>(url, value).Result;
@@ -47,8 +53,8 @@ public abstract class BaseClient
         return response.EnsureSuccessStatusCode();
     }
 
-    protected HttpResponseMessage Delete<T>(string url) => DeleteAsync<T>(url).Result;
-    protected async Task<HttpResponseMessage> DeleteAsync<T>(string url)
+    protected HttpResponseMessage Delete(string url) => DeleteAsync(url).Result;
+    protected async Task<HttpResponseMessage> DeleteAsync(string url)
     {
         var response = await Http.DeleteAsync(url).ConfigureAwait(false);
         return response;

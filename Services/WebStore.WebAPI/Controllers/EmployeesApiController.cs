@@ -21,7 +21,7 @@ public class EmployeesApiController : ControllerBase
     public IActionResult GetAll()
     {
         var employees = _EmployeesData.GetAll();
-        if(employees.Any())
+        if (employees.Any())
             return Ok(employees);
         return NoContent();
     }
@@ -39,6 +39,7 @@ public class EmployeesApiController : ControllerBase
     public IActionResult Add(Employee employee)
     {
         var id = _EmployeesData.Add(employee);
+        _Logger.LogInformation("Сотрудник {0} добавлен с идентификатором {1}.", employee, id);
         return CreatedAtAction(nameof(GetById), new { Id = id }, employee);
     }
 
@@ -46,15 +47,28 @@ public class EmployeesApiController : ControllerBase
     public IActionResult Edit(Employee employee)
     {
         var success = _EmployeesData.Edit(employee);
+        if (success)
+        {
+            _Logger.LogInformation("Сотрудник {0} отредактирован.", employee);
+        }
+        else
+        {
+            _Logger.LogWarning("Проблема при редактировании сотрудника {0}.", employee);
+        }
         return Ok(success);
     }
 
-    [HttpDelete("Id")]
+    [HttpDelete("{Id}")]
     public IActionResult Delete(int Id)
     {
         var result = _EmployeesData.Delete(Id);
-        return result
-            ? Ok(true)
-            : NotFound(false);
+
+        if (result)
+        {
+            _Logger.LogInformation("Сотрудник c id:{0} удалён.", Id);
+            return Ok(result);
+        }
+        _Logger.LogWarning("Сотрудник c id:{0} при удалении не найден.", Id);
+        return NotFound(false);        
     }
 }

@@ -53,7 +53,7 @@ public class EmployeesClient : BaseClient, IEmployeesData
 
     public bool Delete(int Id)
     {
-        var response = Delete("{Address}/{Id}");
+        var response = Delete($"{Address}/{Id}");
         var success = response.IsSuccessStatusCode;
         return success;
     }

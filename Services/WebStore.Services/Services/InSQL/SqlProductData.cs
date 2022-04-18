@@ -18,9 +18,9 @@ public class SqlProductData : IProductData
         _Logger = Logger;
     }
 
-    public IEnumerable<Section> GetSections() => _db.Sections;
+    public IEnumerable<Section> GetSections() => _db.Sections.Include(p => p.Products);
 
-    public IEnumerable<Brand> GetBrands() => _db.Brands;
+    public IEnumerable<Brand> GetBrands() => _db.Brands.Include(p => p.Products);
 
     public IEnumerable<Product> GetProducts(ProductFilter? Filter = null)
     {

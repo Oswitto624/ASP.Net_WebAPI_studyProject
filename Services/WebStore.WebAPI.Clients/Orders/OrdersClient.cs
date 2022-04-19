@@ -11,7 +11,7 @@ public class OrdersClient : BaseClient, IOrderService
     {
     }
 
-    public Task<Order> CreateOrderAsync(string UserName, CartViewModel Cart, OrderViewModel OrderModel, CancellationToken Cancel = default)
+    public Task<IEnumerable<Order>> GetUserOrdersAsync(string UserName, CancellationToken Cancel = default)
     {
         throw new NotImplementedException();
     }
@@ -21,8 +21,10 @@ public class OrdersClient : BaseClient, IOrderService
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<Order>> GetUserOrdersAsync(string UserName, CancellationToken Cancel = default)
+    public Task<Order> CreateOrderAsync(string UserName, CartViewModel Cart, OrderViewModel OrderModel, CancellationToken Cancel = default)
     {
         throw new NotImplementedException();
     }
+
+
 }

@@ -16,19 +16,23 @@ namespace WebStore.WebAPI.Controllers
         public ValuesController(ILogger<ValuesController> Logger) => _Logger = Logger;
 
         [HttpGet]
-        public IEnumerable<string> GetAll() => _Values.Values;
+        public IActionResult GetAll()
+        {
+            var values = _Values.Values;
+            return Ok(values);
+        }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [HttpGet("{Id}")]
+        public IActionResult GetById(int Id)
         {
             //if(!_Values.ContainsKey(id))
             //    return NotFound();
 
             //return Ok(_Values[id]);
 
-            if(_Values.TryGetValue(id, out var value))
+            if(_Values.TryGetValue(Id, out var value))
                 return Ok(value);
-            return NotFound();
+            return NotFound(new {Id});
         }
 
         [HttpGet("count")]
@@ -40,29 +44,41 @@ namespace WebStore.WebAPI.Controllers
         {
             var id = _Values.Count == 0 ? 1 : _Values.Keys.Max() + 1;
             _Values[id] = Value;
-            return CreatedAtAction(nameof(GetById), new { id }, Value);
+
+            _Logger.LogInformation("Добавлено значение {0} с Id:{1}", Value, id);
+            return CreatedAtAction(nameof(GetById), new { Id = id }, Value);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{Id}")]
         public IActionResult Edit(int Id, [FromBody] string Value)
         {
-            if(!_Values.ContainsKey(Id))
-                return NotFound();
-
+            if (!_Values.ContainsKey(Id))
+            {
+                _Logger.LogWarning("Попытка редактирования отсутствующего значения с Id:{0}", Id);
+                return NotFound(new { Id });
+            }
+            var old_value = _Values[Id];
             _Values[Id] = Value;
 
-            return Ok();
+            _Logger.LogInformation("Выполнено изменение значения с Id:{0} с {1} на {2}", Id, old_value, Value);
+            return Ok(new {Value, OldValue = old_value});
         }
 
         [HttpDelete("{Id}")]  // POST -> http://localhost:5209/api/values/42
         public IActionResult Delete(int Id)
         {
             if (!_Values.ContainsKey(Id))
-                return NotFound();
+            {
+                _Logger.LogWarning("Попытка удаления отсутствующего значения с Id:{0}", Id);
+                return NotFound(new { Id });
+            }
 
+            var value = _Values[Id];
             _Values.Remove(Id);
 
-            return Ok();
+            _Logger.LogInformation("Значение {0} с id:{1} удалено", value, Id);
+
+            return Ok(new {Value = value});
         }
     }
 }

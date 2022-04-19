@@ -7,9 +7,15 @@ services:
       - SA_PASSWORD=yourStrong1_2Password
       - MSSQL_PID=Express
 
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Database=DockerDB
+
   webstore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Database=DockerDB
+      - WebAPI=http://api
     ports:
       - "80"

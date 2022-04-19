@@ -35,5 +35,5 @@ public class Employee : Entity
         }
     }
 
-
+    public override string ToString() => $"[{Id}]{LastName} {FirstName} {Patronymic} {Age}";
 }

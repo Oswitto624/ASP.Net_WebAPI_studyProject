@@ -62,8 +62,8 @@ public static class BrandDTOMapper
                 Order = brand.Order,
             };
 
-    public static IEnumerable<BrandDTO> ToDTO(this IEnumerable<Brand> brands) => brands.Select(ToDTO)!;
-    public static IEnumerable<Brand> FromDTO(this IEnumerable<BrandDTO> brands) => brands.Select(FromDTO)!;
+    public static IEnumerable<BrandDTO> ToDTO(this IEnumerable<Brand>? brands) => brands?.Select(ToDTO)!;
+    public static IEnumerable<Brand> FromDTO(this IEnumerable<BrandDTO>? brands) => brands?.Select(FromDTO)!;
 }
 
 public static class SectionDTOMapper
@@ -88,8 +88,8 @@ public static class SectionDTOMapper
                 Order = section.Order,
             };
 
-    public static IEnumerable<SectionDTO> ToDTO(this IEnumerable<Section> sections) => sections.Select(ToDTO)!;
-    public static IEnumerable<Section> FromDTO(this IEnumerable<SectionDTO> sections) => sections.Select(FromDTO)!;
+    public static IEnumerable<SectionDTO> ToDTO(this IEnumerable<Section>? sections) => sections?.Select(ToDTO)!;
+    public static IEnumerable<Section> FromDTO(this IEnumerable<SectionDTO>? sections) => sections?.Select(FromDTO)!;
 }
 
 public static class ProductDTOMapper
@@ -109,7 +109,7 @@ public static class ProductDTOMapper
         };
 
     [return: NotNullIfNotNull("product")]
-    public static Product? FromDTO(this ProductDTO product) => product is null
+    public static Product? FromDTO(this ProductDTO? product) => product is null
     ? null
     : new Product
     {
@@ -122,6 +122,6 @@ public static class ProductDTOMapper
         Section = product.Section.FromDTO(),
     };
 
-    public static IEnumerable<ProductDTO> ToDTO(this IEnumerable<Product> sections) => sections.Select(ToDTO)!;
-    public static IEnumerable<Product> FromDTO(this IEnumerable<ProductDTO> sections) => sections.Select(FromDTO)!;
+    public static IEnumerable<ProductDTO> ToDTO(this IEnumerable<Product>? sections) => sections?.Select(ToDTO)!;
+    public static IEnumerable<Product> FromDTO(this IEnumerable<ProductDTO>? sections) => sections?.Select(FromDTO)!;
 }

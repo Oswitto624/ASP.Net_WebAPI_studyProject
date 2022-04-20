@@ -10,7 +10,7 @@ namespace WebStore.WebAPI.Clients.Products;
 
 public class ProductsClient : BaseClient, IProductData
 {
-    public ProductsClient(HttpClient Client) : base(Client, WebAPIAddresses.Products)
+    public ProductsClient(HttpClient Client) : base(Client, WebAPIAddresses.V1.Products)
     {
 
     }

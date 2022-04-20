@@ -4,7 +4,7 @@ using WebStore.Interfaces;
 namespace WebStore.WebAPI.Controllers
 {
     //[Route("api/[controller]")] // http://localhost:5209/api/values
-    [Route(WebAPIAddresses.Values)] // http://localhost:5209/api/values
+    [Route(WebAPIAddresses.V1.Values)] // http://localhost:5209/api/values
     [ApiController]
     public class ValuesController : ControllerBase
     {

@@ -4,7 +4,7 @@ using WebStore.Interfaces;
 namespace WebStore.WebAPI.Controllers.Identity;
 
 [ApiController]
-[Route(WebAPIAddresses.Identity.Users)]
+[Route(WebAPIAddresses.V1.Identity.Users)]
 public class UsersApiController : ControllerBase
 {
     

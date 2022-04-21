@@ -7,5 +7,16 @@ public class UsersClient : BaseClient
 {
     public UsersClient(HttpClient Client) : base(Client, WebAPIAddresses.V1.Identity.Users) { }
 
+    //protected override void Dispose(bool Disposing)
+    //{
+    //    base.Dispose(Disposing);
+
+    //    if (Disposing)
+    //    {
+
+    //    }
+
+    //}
+
 
 }

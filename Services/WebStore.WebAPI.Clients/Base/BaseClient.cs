@@ -20,8 +20,6 @@ public abstract class BaseClient : IDisposable
     {
         var response = await Http.GetAsync(url, Cancel).ConfigureAwait(false);
         
-        response.EnsureSuccessStatusCode();
-
         switch (response.StatusCode)
         {
             case HttpStatusCode.NoContent:

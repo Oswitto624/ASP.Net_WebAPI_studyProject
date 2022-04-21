@@ -26,6 +26,7 @@ switch (db_connection_string_name)
         services.AddDbContext<WebStoreDB>(opt => opt.UseSqlite(db_connection_string, o => o.MigrationsAssembly("WebStore.DAL.Sqlite")));
         break;
 }
+services.AddTransient<IDbInitializer, DbInitializer>();
 
 services.AddIdentity<User, Role>(/*opt => opt.*/)
     .AddEntityFrameworkStores<WebStoreDB>()
@@ -74,6 +75,12 @@ services.AddSwaggerGen();
 #endregion
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db_initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+    await db_initializer.InitializeAsync(RemoveBefore: false);
+}
 
 if (app.Environment.IsDevelopment())
 {

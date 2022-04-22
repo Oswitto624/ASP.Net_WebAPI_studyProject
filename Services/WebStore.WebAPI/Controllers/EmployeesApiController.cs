@@ -21,6 +21,7 @@ public class EmployeesApiController : ControllerBase
 
     /// <summary>Все сотрудники</summary>
     /// <returns>Возвращает список всех сотрудников</returns>
+    /// <response code="200">Ok</response>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Employee>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -3,11 +3,19 @@ using WebStore.Domain.Entities.Base;
 
 namespace WebStore.Domain.Entities;
 
+/// <summary>Сотрудник</summary>
 public class Employee : Entity
 {
+    /// <summary>Фамилия</summary>
     public string LastName { get; set; } = null!;
+
+    /// <summary>Имя</summary>
     public string FirstName { get; set; } = null!;
+    
+    /// <summary>Отчество</summary>
     public string? Patronymic { get; set; }
+    
+    /// <summary>Фамилия и инициалы</summary>
     public string ShortName
     {
         get
@@ -23,7 +31,10 @@ public class Employee : Entity
             return result.ToString();
         }
     }
+
     private int _Age;
+    
+    /// <summary>Возраст</summary>
     public int Age
     {
         get => _Age;

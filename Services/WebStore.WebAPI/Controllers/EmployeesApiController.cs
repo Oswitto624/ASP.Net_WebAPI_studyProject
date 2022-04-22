@@ -5,6 +5,7 @@ using WebStore.Interfaces.Services;
 
 namespace WebStore.WebAPI.Controllers;
 
+/// <summary>Сотрудники</summary>
 [ApiController]
 [Route(WebAPIAddresses.V1.Employees)]
 public class EmployeesApiController : ControllerBase
@@ -18,6 +19,8 @@ public class EmployeesApiController : ControllerBase
         _Logger = Logger;
     }
 
+    /// <summary>Все сотрудники</summary>
+    /// <returns>Возвращает список всех сотрудников</returns>
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -27,6 +30,9 @@ public class EmployeesApiController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Сотрудник с заданным идентификатором</summary>
+    /// <param name="Id">Искомый идентификатор сотрудника</param>
+    /// <returns>Сотрудник с искомым идентификатором, либо <c>null</c> в случае его необнаружения</returns>
     [HttpGet("{Id:int}")]
     public IActionResult GetById(int Id)
     {
@@ -36,6 +42,9 @@ public class EmployeesApiController : ControllerBase
         return Ok(employee);
     }
 
+    /// <summary>Добавление сотрудника</summary>
+    /// <param name="employee">Новый сотрудник</param>
+    /// <returns>Созданный сотрудник</returns>
     [HttpPost]
     public IActionResult Add(Employee employee)
     {
@@ -44,6 +53,10 @@ public class EmployeesApiController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { Id = id }, employee);
     }
 
+
+    /// <summary>Редактирование сотрудника</summary>
+    /// <param name="employee">Информация для редактирования сотрудника</param>
+    /// <returns>true если редактирование выполнено успешно</returns>
     [HttpPut]
     public IActionResult Edit(Employee employee)
     {
@@ -59,6 +72,9 @@ public class EmployeesApiController : ControllerBase
         return Ok(success);
     }
 
+    /// <summary>Удаление сотрудника</summary>
+    /// <param name="Id">Идентификатор удаляемого сотрудника</param>
+    /// <returns><c>true</c> если сотрудник был удалён</returns>
     [HttpDelete("{Id}")]
     public IActionResult Delete(int Id)
     {

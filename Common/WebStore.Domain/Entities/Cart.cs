@@ -8,7 +8,7 @@ public class Cart
 
 public class CartItem
 {
-    public object quantity;
+    public object quantity = null!;
 
     public int ProductId { get; set; }
     public int Quantity { get; set; } = 1;

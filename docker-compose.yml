@@ -17,7 +17,6 @@ services:
   webstore:
     image: ${DOCKER_REGISTRY-}webstore
     depends_on:
-      - db
       - api
     build:
       context: .

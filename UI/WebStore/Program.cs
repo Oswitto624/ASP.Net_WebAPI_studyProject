@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using Polly;
+using Polly.Extensions.Http;
 using WebStore.Domain.Entities.Identity;
 using WebStore.Interfaces.Services;
 using WebStore.Interfaces.TestAPI;
@@ -28,7 +30,11 @@ services.AddHttpClient("WebStoreAPIIdentity", client => client.BaseAddress = new
     .AddTypedClient<IUserTwoFactorStore<User>, UsersClient>()
     .AddTypedClient<IUserClaimStore<User>, UsersClient>()
     .AddTypedClient<IUserLoginStore<User>, UsersClient>()
-    .AddTypedClient<IRoleStore<Role>, RolesClient>();
+    .AddTypedClient<IRoleStore<Role>, RolesClient>()
+    .AddPolicyHandler(GetRetryPolicy())
+    .AddPolicyHandler(GetCircuitBreakerPolicy())
+    .SetHandlerLifetime(TimeSpan.FromMinutes(15))
+    ;
 
 services.Configure<IdentityOptions>(opt =>
 {
@@ -69,7 +75,27 @@ services.AddHttpClient("WebStoreAPI", client => client.BaseAddress = new(configu
     .AddTypedClient<IValuesService, ValuesClient>()
     .AddTypedClient<IEmployeesData, EmployeesClient>()
     .AddTypedClient<IProductData, ProductsClient>()
-    .AddTypedClient<IOrderService, OrdersClient>();
+    .AddTypedClient<IOrderService, OrdersClient>()
+    .AddPolicyHandler(GetRetryPolicy())
+    .AddPolicyHandler(GetCircuitBreakerPolicy())
+    .SetHandlerLifetime(TimeSpan.FromMinutes(15))
+    ;
+
+static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int MaxRetryCount = 5, int MaxJitterTime = 1000)
+{
+    var jitter = new Random();
+    return HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(
+            MaxRetryCount, RetryAttempt =>
+                TimeSpan.FromSeconds(Math.Pow(2, RetryAttempt)) +
+                TimeSpan.FromMilliseconds(jitter.Next(0, MaxJitterTime)));
+}
+
+static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() => 
+    HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 5, TimeSpan.FromSeconds(30));
 
 services.AddAutoMapper(typeof(Program));
 

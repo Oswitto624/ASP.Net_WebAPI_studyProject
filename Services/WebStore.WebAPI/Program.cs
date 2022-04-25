@@ -8,6 +8,7 @@ using WebStore.Services.Services.InMemory;
 using WebStore.Services.Services.InSQL;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddLog4Net();
 
 #region Настройка сервисов приложения
 var services = builder.Services;

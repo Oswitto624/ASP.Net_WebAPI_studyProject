@@ -11,10 +11,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Database=DockerDB
+    ports:
+      - "5002:80" 
 
   webstore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - WebAPI=http://api
     ports:
-      - "80"
+      - "80:80"

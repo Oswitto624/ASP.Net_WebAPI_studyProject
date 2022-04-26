@@ -22,6 +22,7 @@ services:
     image: ${DOCKER_REGISTRY-}webstore
     depends_on:
       - api
+      - logs
     build:
       context: .
       dockerfile: UI/WebStore/Dockerfile

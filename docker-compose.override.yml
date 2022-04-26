@@ -24,5 +24,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - WebAPI=http://api
+      - SeqAddress=http://logs
     ports:
       - "80:80"

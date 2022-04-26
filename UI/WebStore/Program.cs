@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using Polly;
 using Polly.Extensions.Http;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
 using WebStore.Domain.Entities.Identity;
 using WebStore.Interfaces.Services;
 using WebStore.Interfaces.TestAPI;
+using WebStore.Logging;
 using WebStore.Services.Services;
 using WebStore.WebAPI.Clients.Employees;
 using WebStore.WebAPI.Clients.Identity;
@@ -12,6 +16,33 @@ using WebStore.WebAPI.Clients.Products;
 using WebStore.WebAPI.Clients.Values;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddLog4Net();
+//builder.Host.ConfigureLogging(log =>
+//    log
+//        .ClearProviders()
+//        .AddConsole(opt => opt.FormatterName = "json")
+//        .AddDebug()
+//        .AddEventLog(opt =>
+//        {
+//            opt.LogName = "WebStore";
+//            opt.SourceName = "GB";
+//        })    
+//        .AddFilter<ConsoleLoggerProvider>("Microsoft", LogLevel.Warning)
+//    );
+
+builder.Host.UseSerilog((host, log) => log.ReadFrom.Configuration(host.Configuration)
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss.fff} {Level:u3}]{SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}"
+        //, theme: new SystemConsoleTheme()
+        )
+    .WriteTo.RollingFile($@".\Logs\WebStore[{DateTime.Now:yyy-MM-ddTHH-mm-ss}].log")
+    .WriteTo.File(new JsonFormatter(", ", true), $@".\Logs\WebStore[{DateTime.Now:yyy-MM-ddTHH-mm-ss}].log.json")
+    .WriteTo.Seq(host.Configuration["SeqAddress"])
+    );
+
 
 var services = builder.Services;
 services.AddControllersWithViews();

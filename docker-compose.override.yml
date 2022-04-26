@@ -6,15 +6,32 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=yourStrong1_2Password
       - MSSQL_PID=Express
+    volumes:
+      - ./db:/var/opt/mssql/data 
+
+  logs:
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - ./logs:/data
+    ports:
+      - "5005:80"
 
   api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Database=DockerDB
+    volumes:
+      - ./logs:/app/Logs
+    ports:
+      - "5002:80" 
 
   webstore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - WebAPI=http://api
+      - SeqAddress=http://logs
+    volumes:
+      - ./logs:/app/Logs
     ports:
-      - "80"
+      - "80:80"

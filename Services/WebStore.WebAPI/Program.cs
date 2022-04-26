@@ -1,33 +1,24 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.EntityFrameworkCore;
 using WebStore.DAL.Context;
 using WebStore.Domain.Entities.Identity;
 using WebStore.Interfaces.Services;
+using WebStore.Logging;
 using WebStore.Services.Services.InMemory;
 using WebStore.Services.Services.InSQL;
+using WebStore.WebAPI.Infrastructure.Middleware;
+using WebStore.WebAPI.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddLog4Net();
 
 #region Настройка сервисов приложения
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-var db_connection_string_name = configuration["Database"];
-var db_connection_string = configuration.GetConnectionString(db_connection_string_name);
-
-switch (db_connection_string_name)
-{
-    case "SqlServer":
-    case "DockerDB":
-        services.AddDbContext<WebStoreDB>(opt => opt.UseSqlServer(db_connection_string));
-        break;
-
-    case "Sqlite":
-        services.AddDbContext<WebStoreDB>(opt => opt.UseSqlite(db_connection_string, o => o.MigrationsAssembly("WebStore.DAL.Sqlite")));
-        break;
-}
-services.AddTransient<IDbInitializer, DbInitializer>();
+services
+    .AddWebStoreDB(configuration)
+    .AddTransient<IDbInitializer, DbInitializer>();
 
 services.AddIdentity<User, Role>(/*opt => opt.*/)
     .AddEntityFrameworkStores<WebStoreDB>()
@@ -108,6 +99,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseAuthorization();
 

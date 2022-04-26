@@ -19,11 +19,5 @@ public class Log4NetLoggerProvider : ILoggerProvider
             return new Log4NetLogger(category, xml["log4net"]!);
         }, _СonfigurationFile);
 
-    public void Dispose()
-    {
-        var loggers = _Loggers.Values.ToArray();
-        _Loggers.Clear();
-        foreach (var logger in loggers)
-            log.Dispose();
-    }
+    public void Dispose() => _Loggers.Clear();
 }

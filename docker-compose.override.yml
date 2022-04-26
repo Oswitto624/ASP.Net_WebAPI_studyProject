@@ -7,6 +7,12 @@ services:
       - SA_PASSWORD=yourStrong1_2Password
       - MSSQL_PID=Express
 
+  logs:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5005:80"
+
   api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

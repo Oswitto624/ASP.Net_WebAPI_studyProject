@@ -6,6 +6,10 @@ services:
     container_name: MSSQL
     image: "mcr.microsoft.com/mssql/server:2019-latest"
 
+  logs:
+    container_name: SEQ
+    image: "datalust/seq:latest"
+
   api:
     image: ${DOCKER_REGISTRY-}webstore-api
     depends_on:

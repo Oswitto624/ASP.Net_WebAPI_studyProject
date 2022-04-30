@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-
 using Newtonsoft.Json;
 using WebStore.Domain.Entities;
 using WebStore.Domain.ViewModels;

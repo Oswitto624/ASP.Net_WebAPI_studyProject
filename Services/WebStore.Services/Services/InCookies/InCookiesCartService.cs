@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-
 using Newtonsoft.Json;
 using WebStore.Domain.Entities;
 using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
 using WebStore.Services.Mapping;
 
-namespace WebStore.Services.Services;
+namespace WebStore.Services.Services.InCookies;
 
 public class InCookiesCartService : ICartService
 {

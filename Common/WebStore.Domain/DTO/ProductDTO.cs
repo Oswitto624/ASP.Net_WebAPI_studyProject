@@ -38,6 +38,8 @@ public class BrandDTO
     public string Name { get; set; } = null!;
 
     public int Order { get; set; }
+
+    public int ProductsCount { get; set; }
 }
 
 public static class BrandDTOMapper
@@ -50,6 +52,7 @@ public static class BrandDTOMapper
             Id = brand.Id,
             Name = brand.Name,
             Order = brand.Order,
+            ProductsCount = brand.Products.Count,
         };
 
     [return: NotNullIfNotNull("brand")]
@@ -60,6 +63,7 @@ public static class BrandDTOMapper
                 Id = brand.Id,
                 Name = brand.Name,
                 Order = brand.Order,
+                Products = new Product[brand.ProductsCount],
             };
 
     public static IEnumerable<BrandDTO> ToDTO(this IEnumerable<Brand>? brands) => brands?.Select(ToDTO)!;

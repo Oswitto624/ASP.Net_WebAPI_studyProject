@@ -8,6 +8,7 @@ public static class WebAPIAddresses
         public const string Orders = "api/v1/orders";
         public const string Products = "api/v1/products";
         public const string Values = "api/v1/values";
+        public const string Console = "api/v1/console";
 
         public static class Identity
         {

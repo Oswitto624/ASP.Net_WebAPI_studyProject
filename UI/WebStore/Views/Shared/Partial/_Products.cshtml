@@ -12,7 +12,13 @@
                         <img src="~/images/shop/@product.ImageUrl" alt="@product.Name" />
                         <h2>@product.Price.ToString("C2")</h2>
                         <p>
-                            <a asp-controller="Catalog" asp-action="Details" asp-route-Id="@product.Id">@product.Name</a>
+                            <a asp-controller="Catalog" 
+                               asp-action="Details" 
+                               asp-route-Id="@product.Id"
+                               asp-route-BrandId="@Context.Request.Query["BrandId"]"
+                               asp-route-SectionId="@Context.Request.Query["SectionId"]">
+                                @product.Name
+                            </a>
                         </p>
                         <a asp-controller="Cart" asp-action="Add" asp-route-Id="@product.Id" class="btn btn-default add-to-cart">
                             <i class="fa fa-shopping-cart"></i>
@@ -23,7 +29,13 @@
                         <div class="overlay-content">
                             <h2>@product.Price.ToString("C2")</h2>
                             <p>
-                                <a asp-controller="Catalog" asp-action="Details" asp-route-Id="@product.Id">@product.Name</a>
+                                 <a asp-controller="Catalog" 
+                                    asp-action="Details" 
+                                    asp-route-Id="@product.Id"
+                                    asp-route-BrandId="@Context.Request.Query["BrandId"]"
+                                    asp-route-SectionId="@Context.Request.Query["SectionId"]">
+                                     @product.Name
+                                 </a>
                             </p>                            
                             <a asp-controller="Cart" asp-action="Add" asp-route-Id="@product.Id" class="btn btn-default add-to-cart" class="btn btn-default add-to-cart">
                                 <i class="fa fa-shopping-cart"></i>

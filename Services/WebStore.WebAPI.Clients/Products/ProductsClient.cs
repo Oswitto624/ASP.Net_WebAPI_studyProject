@@ -24,7 +24,7 @@ public class ProductsClient : BaseClient, IProductData
     public Section? GetSectionById(int Id)
     {
         //var section = Get<Section>($"{Address}/section/{Id}");
-        var section = Get<SectionDTO>($"{Address}/section/{Id}");
+        var section = Get<SectionDTO>($"{Address}/sections/{Id}");
         return section.FromDTO();
     }
 

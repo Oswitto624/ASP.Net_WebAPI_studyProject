@@ -1,9 +1,8 @@
 ﻿<div class="shop-menu pull-right">
     <ul class="nav navbar-nav">
         <li>
-            <a asp-controller="Cart" asp-action="Index">
-                <i class="fa fa-shopping-cart"></i> 
-                Корзина
+            <a asp-controller="Cart" asp-action="Index" id="cart-container">
+                <vc:cart/>
             </a>
         </li>
         <li>

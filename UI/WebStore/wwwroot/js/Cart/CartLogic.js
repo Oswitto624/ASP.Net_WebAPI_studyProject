@@ -1,7 +1,9 @@
 ﻿Cart = {
     _properties: {
         getCartViewLink: "",
-        addToCartLink: ""
+        addToCartLink: "",
+        decrementLink: "",
+        removeFromCartlink: ""
     },
 
     init: function(properties) {

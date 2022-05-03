@@ -13,7 +13,7 @@
     addToCart: function(e) {
         e.preventDefault();
 
-        const button = $(this);
+        var button = $(this);
         const id = button.data("id");
 
         $.get(Cart._properties.addToCartLink + "/" + id)
@@ -27,17 +27,17 @@
     },
 
     showToolTip: function(button) {
-        button.tooltip({ title: "Добавлено в корзину" }.tooltip("show"));
+        button.tooltip({ title: "Добавлено в корзину" }).tooltip("show");
         setTimeout(function () {
                 button.tooltip("destroy");
             },
             500);
     },
 
-    refreshCartView: function () {
-        $get(Cart._properties.getCartViewLink)
+    refreshCartView: function() {
+        $.get(Cart._properties.getCartViewLink)
             .done(function(cartHtml) {
-                $("#cart-container").html(cartHtml)
+                $("#cart-container").html(cartHtml);
             })
             .fail(function () { console.log("refreshCartView fail"); });
 

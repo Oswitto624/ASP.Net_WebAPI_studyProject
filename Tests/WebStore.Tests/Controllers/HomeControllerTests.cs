@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WebStore.Controllers;
 using WebStore.Domain;
+using WebStore.Domain.DTO;
 using WebStore.Domain.Entities;
 using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
@@ -117,7 +118,7 @@ public class HomeControllerTests
         var product_data_mock = new Mock<IProductData>();
         product_data_mock
             .Setup(s => s.GetProducts(It.IsAny<ProductFilter>()))
-            .Returns(products);
+            .Returns(new Page<Product>(products, 1, products.Length, products.Length));
 
         var controller = new HomeController(configuration_mock.Object);
 

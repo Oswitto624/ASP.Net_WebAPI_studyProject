@@ -76,7 +76,7 @@ public class CartService : ICartService
             Ids = cart.Items.Select(i => i.ProductId).ToArray()
         });
 
-        var products_views = products.ToView().ToDictionary(p => p!.Id);
+        var products_views = products.Items.ToView().ToDictionary(p => p!.Id);
 
         return new()
         {

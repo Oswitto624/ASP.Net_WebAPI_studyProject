@@ -15,7 +15,7 @@ var products_client = new ProductsClient(http);
 Console.WriteLine("Ожидание запуска WebAPI. Нажмите Enter для продложения");
 Console.ReadLine();
 
-foreach (var product in products_client.GetProducts())
+foreach (var product in products_client.GetProducts().Items)
 {
     Console.WriteLine("[{0}] {1}", product.Id, product.Name);
 }

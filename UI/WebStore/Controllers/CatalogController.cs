@@ -30,15 +30,21 @@ public class CatalogController : Controller
             PageSize = page_size,
         };
 
-        var (products, _, _, total_count) = _ProductData.GetProducts(filter);
+        var product_page = _ProductData.GetProducts(filter);
 
         return View(new CatalogViewModel
         {
             SectionId = SectionId,
             BrandId = BrandId,
-            Products = products
+            Products = product_page.Items
                 .OrderBy(p => p.Order)
                 .ToView()!,
+            PageModel = new()
+            {
+                Page = PageNumber,
+                PageSize = page_size ?? 0,
+                TotalPages = product_page.PagesCount,
+            },
         });
     }
 

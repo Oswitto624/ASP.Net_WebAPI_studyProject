@@ -4,13 +4,13 @@ namespace WebStore.Interfaces.Services;
 
 public interface IEmployeesData
 {
-    IEnumerable<Employee> GetAll();
+    Task<IEnumerable<Employee>> GetAllAsync(CancellationToken CancellationToken = default);
 
-    Employee? GetById(int id);
+    Task<Employee?> GetByIdAsync(int id, CancellationToken CancellationToken = default);
 
-    int Add(Employee employee);
+    Task<int> AddAsync(Employee employee, CancellationToken CancellationToken = default);
 
-    bool Edit(Employee employee);
+    Task<bool> EditAsync(Employee employee, CancellationToken CancellationToken = default);
 
-    bool Delete(int id);
+    Task<bool> DeleteAsync(int id, CancellationToken CancellationToken = default);
 }

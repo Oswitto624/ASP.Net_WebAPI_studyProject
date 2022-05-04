@@ -16,7 +16,7 @@ public class WebStoreDB : IdentityDbContext<User, Role, string>
 
     public DbSet<Order> Orders { get; set; } = null!;
 
-
+    public DbSet<Employee> Employees { get; set; } = null!;
     public WebStoreDB(DbContextOptions<WebStoreDB> options) : base(options)
     {
 

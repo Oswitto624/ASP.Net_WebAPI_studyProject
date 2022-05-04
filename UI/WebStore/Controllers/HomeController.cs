@@ -13,6 +13,7 @@ namespace WebStore.Controllers
         public IActionResult Index([FromServices] IProductData ProductData)
         {
             var products = ProductData.GetProducts()
+                .Items
                 .OrderBy(p => p.Order)
                 .Take(6)
                 .ToView();

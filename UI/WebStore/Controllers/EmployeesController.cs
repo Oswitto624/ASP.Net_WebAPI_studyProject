@@ -20,16 +20,16 @@ public class EmployeesController : Controller
         _Logger = Logger;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var employees = _EmployeesData.GetAll();
+        var employees = await _EmployeesData.GetAllAsync();
         return View(employees);
     }
 
     //[Route("~/employees/info-({id:int})")]
-    public IActionResult Details(int Id)
+    public async Task<IActionResult> Details(int Id)
     {
-        var employee = _EmployeesData.GetById(Id);
+        var employee = await _EmployeesData.GetByIdAsync(Id);
 
         if (employee == null)
             return NotFound();
@@ -38,20 +38,17 @@ public class EmployeesController : Controller
     }
 
     [Authorize(Roles = Role.Administrators)]
-    public IActionResult Create()
-    {
-        return View("Edit", new EmployeesViewModel());
-    }
+    public IActionResult Create() => View("Edit", new EmployeesViewModel());
 
     [Authorize(Roles = Role.Administrators)]
-    public IActionResult Edit(int? Id)
+    public async Task<IActionResult> Edit(int? Id)
     {
         if (Id is not { } id)
         {
             return View(new EmployeesViewModel());
         }
 
-        var employee = _EmployeesData.GetById(id);
+        var employee = await _EmployeesData.GetByIdAsync(id);
         if (employee is null)
             return NotFound();
 
@@ -70,7 +67,7 @@ public class EmployeesController : Controller
 
     [HttpPost]
     [Authorize(Roles = Role.Administrators)]
-    public IActionResult Edit(EmployeesViewModel Model)
+    public async Task<IActionResult> Edit(EmployeesViewModel Model)
     {
         if (Model.LastName == "Иванов" && Model.Age < 21)
             ModelState.AddModelError("", "Иванов должен быть старше 21 года");
@@ -87,21 +84,21 @@ public class EmployeesController : Controller
         };
         if(Model.Id == 0)
         {
-            var id = _EmployeesData.Add(employee);
+            var id = await _EmployeesData.AddAsync(employee);
             return RedirectToAction(nameof(Details), new {id});
         }
 
-        _EmployeesData.Edit(employee);
+        await _EmployeesData.EditAsync(employee);
         return RedirectToAction(nameof(Index));
     }
 
     [Authorize(Roles = Role.Administrators)]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         if(id<0)
             return BadRequest();
 
-        var employee = _EmployeesData.GetById(id);
+        var employee = await _EmployeesData.GetByIdAsync(id);
         if (employee is null)
             return NotFound();
 
@@ -120,9 +117,9 @@ public class EmployeesController : Controller
 
     [HttpPost]
     [Authorize(Roles = Role.Administrators)]
-    public IActionResult DeleteConfirmed(int Id) 
+    public async Task<IActionResult> DeleteConfirmed(int Id) 
     {
-        if (!_EmployeesData.Delete(Id))
+        if (!await _EmployeesData.DeleteAsync(Id))
             return NotFound();
 
         return RedirectToAction(nameof(Index));

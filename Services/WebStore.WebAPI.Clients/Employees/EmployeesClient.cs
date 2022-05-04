@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Net.Http.Json;
+using WebStore.Domain;
 using WebStore.Domain.Entities;
 using WebStore.Interfaces;
 using WebStore.Interfaces.Services;
@@ -17,22 +19,56 @@ public class EmployeesClient : BaseClient, IEmployeesData
         _Logger = Logger;
     }
 
-    public IEnumerable<Employee> GetAll()
+    public async Task<int> CountAsync(CancellationToken Cancel = default)
     {
-        var employees = Get<IEnumerable<Employee>>(Address);
+        var count = await GetAsync<int>($"{Address}/count", Cancel).ConfigureAwait(false);
+        return count;
+    }
+
+    public async Task<IEnumerable<Employee>> GetAsync(int Skip, int Take, CancellationToken Cancel = default)
+    {
+        var response = await Http.GetAsync($"{Address}/({Skip}:{Take})", Cancel).ConfigureAwait(false);
+        
+        if(response.StatusCode == HttpStatusCode.NoContent)
+            return Enumerable.Empty<Employee>();
+
+        var items = await response
+            .EnsureSuccessStatusCode()
+            .Content
+            .ReadFromJsonAsync<IEnumerable<Employee>>(cancellationToken: Cancel)
+            ?? throw new InvalidOperationException("Не удалось получить список сотрудников");
+
+        return items;
+    }
+
+    public async Task<Page<Employee>> GetPageAsync(int PageIndex, int PageSize, CancellationToken Cancel = default)
+    {
+        var page = await GetAsync<Page<Employee>>($"{Address}/page({PageIndex}:{PageSize})", Cancel)
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException("Не удалось получить список сотрудников");
+        return page;
+    }
+
+    public async Task<IEnumerable<Employee>> GetAllAsync(CancellationToken Cancel = default)
+    {
+        var employees = await GetAsync<IEnumerable<Employee>>(Address, Cancel).ConfigureAwait(false);
         return employees ?? Enumerable.Empty<Employee>();
     }
 
-    public Employee? GetById(int id)
+    public async Task<Employee?> GetByIdAsync(int id, CancellationToken Cancel = default)
     {
-        var employee = Get<Employee>($"{Address}/{id}");
+        var employee = await GetAsync<Employee>($"{Address}/{id}", Cancel).ConfigureAwait(false);
         return employee;
     }
 
-    public int Add(Employee employee)
+    public async Task<int> AddAsync(Employee employee, CancellationToken Cancel = default)
     {
-        var response = Post(Address, employee);
-        var added_employee = response.Content.ReadFromJsonAsync<Employee>().Result;
+        var response = await PostAsync(Address, employee, Cancel).ConfigureAwait(false);
+        
+        var added_employee = await response
+            .Content
+            .ReadFromJsonAsync<Employee>(cancellationToken: Cancel);
+        
         if (added_employee is null)
             return -1;
 
@@ -41,23 +77,22 @@ public class EmployeesClient : BaseClient, IEmployeesData
         return id;
     }
 
-    public bool Edit(Employee employee)
+    public async Task<bool> EditAsync(Employee employee, CancellationToken Cancel = default)
     {
-        var response = Put(Address, employee);
-        var success = response
+        var response = await PutAsync(Address, employee, Cancel).ConfigureAwait(false);
+        
+        var success = await response
             .EnsureSuccessStatusCode()
             .Content
-            .ReadFromJsonAsync<bool>()
-            .Result;
+            .ReadFromJsonAsync<bool>(cancellationToken: Cancel);
+        
         return success;
     }
 
-    public bool Delete(int Id)
+    public async Task<bool> DeleteAsync(int Id, CancellationToken Cancel = default)
     {
-        var response = Delete($"{Address}/{Id}");
+        var response = await DeleteAsync($"{Address}/{Id}", Cancel).ConfigureAwait(false);
         var success = response.IsSuccessStatusCode;
         return success;
     }
-
-
 }

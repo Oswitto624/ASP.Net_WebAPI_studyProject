@@ -1,16 +1,23 @@
-﻿using WebStore.Domain.Entities;
+﻿using WebStore.Domain;
+using WebStore.Domain.Entities;
 
 namespace WebStore.Interfaces.Services;
 
 public interface IEmployeesData
 {
-    IEnumerable<Employee> GetAll();
+    Task<int> CountAsync(CancellationToken Cancel = default);
 
-    Employee? GetById(int id);
+    Task<IEnumerable<Employee>> GetAsync(int Skip, int Take, CancellationToken Cancel = default);
 
-    int Add(Employee employee);
+    Task<Page<Employee>> GetPageAsync(int PageIndex, int PageSize, CancellationToken Cancel = default);
 
-    bool Edit(Employee employee);
+    Task<IEnumerable<Employee>> GetAllAsync(CancellationToken CancellationToken = default);
 
-    bool Delete(int id);
+    Task<Employee?> GetByIdAsync(int id, CancellationToken CancellationToken = default);
+
+    Task<int> AddAsync(Employee employee, CancellationToken CancellationToken = default);
+
+    Task<bool> EditAsync(Employee employee, CancellationToken CancellationToken = default);
+
+    Task<bool> DeleteAsync(int id, CancellationToken CancellationToken = default);
 }

@@ -101,7 +101,17 @@ public static class SectionDTOMapper
 public static class ProductDTOMapper
 {
     [return: NotNullIfNotNull("product")]
-    public static ProductDTO? ToDTO(this Product product) => product is null
+    public static Page<ProductDTO>? ToDTO(this Page<Product>? page) => page is null
+        ? null
+        : new(page.Items.ToDTO(), page.PageNumber, page.PageSize, page.TotalCount);
+
+    [return: NotNullIfNotNull("product")]
+    public static Page<Product>? FromDTO(this Page<ProductDTO>? page) => page is null
+        ? null
+        : new(page.Items.FromDTO(), page.PageNumber, page.PageSize, page.TotalCount);
+
+    [return: NotNullIfNotNull("product")]
+    public static ProductDTO? ToDTO(this Product? product) => product is null
         ? null
         : new ProductDTO
         {

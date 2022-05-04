@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WebStore.Domain;
 using WebStore.Domain.Entities;
 using WebStore.Interfaces.Services;
+using WebStore.Domain.DTO;
 
 namespace WebStore.Tests.Controllers;
 
@@ -33,7 +34,7 @@ public class HomeControllerIntegrationTests
         var product_data_mock = new Mock<IProductData>();
         product_data_mock
            .Setup(s => s.GetProducts(It.IsAny<ProductFilter>()))
-           .Returns(products);
+           .Returns(new Page<Product>(products, 1, products.Length, products.Length));
 
         var application = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>

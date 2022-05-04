@@ -40,11 +40,11 @@ public class ProductsClient : BaseClient, IProductData
         return brand.FromDTO();
     }
 
-    public IEnumerable<Product> GetProducts(ProductFilter? Filter = null)
+    public Page<Product> GetProducts(ProductFilter? Filter = null)
     {
         var response = Post(Address, Filter ?? new());
-        var products = response.Content.ReadFromJsonAsync<IEnumerable<ProductDTO>>().Result;
-        return products.FromDTO();
+        var products = response.Content.ReadFromJsonAsync<Page<ProductDTO>>().Result;
+        return products.FromDTO()!;
     }
 
     public Product? GetProductById(int Id)

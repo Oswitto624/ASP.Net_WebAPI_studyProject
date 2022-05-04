@@ -22,7 +22,7 @@ public class SqlProductData : IProductData
 
     public IEnumerable<Brand> GetBrands() => _db.Brands.Include(p => p.Products);
 
-    public IEnumerable<Product> GetProducts(ProductFilter? Filter = null)
+    public Page<Product> GetProducts(ProductFilter? Filter = null)
     {
         IQueryable<Product> query = _db.Products
             .Include(p => p.Section)
@@ -42,7 +42,16 @@ public class SqlProductData : IProductData
                 query = query.Where(p => p.BrandId == Filter.BrandId);
         }
 
-        return query;
+        var count = query.Count();
+
+        if(Filter is { PageSize: > 0 and var page_size, PageNumber: > 0 and var page })
+        {
+            query = query
+                .Skip((page - 1) * page_size)
+                .Take(page_size);
+        }
+
+        return new(query, Filter?.PageNumber ?? 0, Filter?.PageSize ?? 0, count);
     }
 
     public Section? GetSectionById(int Id) => _db.Sections

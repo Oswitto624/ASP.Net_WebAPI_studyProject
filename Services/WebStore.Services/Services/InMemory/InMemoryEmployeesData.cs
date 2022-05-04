@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using WebStore.Domain;
 using WebStore.Domain.Entities;
 using WebStore.Interfaces.Services;
 using WebStore.Services.Data;
@@ -18,41 +19,81 @@ public class InMemoryEmployeesData : IEmployeesData
         _LastFreeId = _Employees.Count == 0 ? 1 : _Employees.Max(e => e.Id) + 1; //только для тестового сервиса
     }
 
-    public IEnumerable<Employee> GetAll()
+
+    public Task<int> CountAsync(CancellationToken Cancel = default) => Cancel.IsCancellationRequested
+        ? Task.FromCanceled<int>(Cancel)
+        : Task.FromResult(_Employees.Count);
+
+    public Task<IEnumerable<Employee>> GetAsync(int Skip, int Take, CancellationToken Cancel = default)
     {
-        return _Employees;
+        if(Cancel.IsCancellationRequested)
+            return Task.FromCanceled<IEnumerable<Employee>>(Cancel);
+
+        var result = _Employees
+            .Skip(Skip)
+            .Take(Take);
+
+        return Task.FromResult(result);
     }
 
-    public Employee? GetById(int id)
+    public Task<Page<Employee>> GetPageAsync(int PageIndex, int PageSize, CancellationToken Cancel = default)
     {
+        if (Cancel.IsCancellationRequested)
+            return Task.FromCanceled<Page<Employee>>(Cancel);
+
+        var items = _Employees
+            .Skip(PageIndex * PageSize)
+            .Take(PageSize);
+
+        return Task.FromResult(new Page<Employee>(items, PageIndex, PageSize, _Employees.Count));
+    }
+
+    public Task<IEnumerable<Employee>> GetAllAsync(CancellationToken Cancel = default)
+    {
+        return Cancel.IsCancellationRequested
+            ? Task.FromCanceled<IEnumerable<Employee>>(Cancel)
+            : Task.FromResult(_Employees.AsEnumerable());
+    }
+
+    public Task<Employee?> GetByIdAsync(int id, CancellationToken Cancel = default)
+    {
+        if(Cancel.IsCancellationRequested)
+            return Task.FromCanceled<Employee?>(Cancel);
+
         var employee = _Employees.FirstOrDefault(employee => employee.Id == id);
-        return employee;
+        return Task.FromResult(employee);
     }
 
-    public int Add(Employee employee)
+    public Task<int> AddAsync(Employee employee, CancellationToken Cancel = default)
     {
         if (employee is null)
             throw new ArgumentNullException(nameof(employee));
+
+        if(Cancel.IsCancellationRequested)
+            return Task.FromCanceled<int>(Cancel);
 
         //удалить потом, только для данного сервиса
         if (_Employees.Contains(employee))
-            return employee.Id;
+            return Task.FromResult(employee.Id);
 
         employee.Id = _LastFreeId++;
         _Employees.Add(employee);
-        return employee.Id;
+
+        return Task.FromResult(employee.Id);
     }
 
-    public bool Edit(Employee employee)
+    public async Task<bool> EditAsync(Employee employee, CancellationToken Cancel = default)
     {
         if (employee is null)
             throw new ArgumentNullException(nameof(employee));
+
+        Cancel.ThrowIfCancellationRequested();
 
         //удалить потом, только для данного сервиса
         if (_Employees.Contains(employee))
             return true;
 
-        var db_employee = GetById(employee.Id);
+        var db_employee = await GetByIdAsync(employee.Id, Cancel).ConfigureAwait(false);
         if (db_employee is null)
         {
             _Logger.LogWarning("Попытка редактировать несуществующего сотрудника с id:{0}", employee.Id);
@@ -71,9 +112,9 @@ public class InMemoryEmployeesData : IEmployeesData
         return true;
     }
 
-    public bool Delete(int id)
+    public async Task<bool> DeleteAsync(int id, CancellationToken Cancel = default)
     {
-        var db_employee = GetById(id);
+        var db_employee = await GetByIdAsync(id, Cancel).ConfigureAwait(false);
         if (db_employee is null)
         {
             _Logger.LogWarning("Попытка удаления несуществующего сотрудника с id:{0}", id);
@@ -85,6 +126,4 @@ public class InMemoryEmployeesData : IEmployeesData
 
         return true;
     }
-
-
 }

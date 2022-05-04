@@ -21,15 +21,38 @@ public class EmployeesApiController : ControllerBase
         _Logger = Logger;
     }
 
+    [HttpGet("count")]
+    public async Task<IActionResult> GetCount()
+    {
+        var count = await _EmployeesData.CountAsync();
+        return Ok(count);
+    }
+
+    [HttpGet("({Skip}:{Take})")]
+    public async Task<IActionResult> Get(int Skip, int Take)
+    {
+        var items = await _EmployeesData.GetAsync(Skip, Take);
+        if(items.Any())
+            return Ok(items);
+        return NoContent();
+    }
+
+    [HttpGet("page({PageIndex}:{PageSize})")]
+    public async Task<IActionResult> GetPage(int PageIndex, int PageSize)
+    {
+        var page = await _EmployeesData.GetPageAsync(PageIndex, PageSize);
+        return Ok(page);
+    }
+
     /// <summary>Все сотрудники</summary>
     /// <returns>Возвращает список всех сотрудников</returns>
     /// <response code="200">Ok</response>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Employee>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var employees = _EmployeesData.GetAll();
+        var employees = await _EmployeesData.GetAllAsync();
         if (employees.Any())
             return Ok(employees);
         return NoContent();
@@ -41,9 +64,9 @@ public class EmployeesApiController : ControllerBase
     [HttpGet("{Id:int}")]
     [ProducesResponseType(typeof(Employee), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetById(int Id)
+    public async Task<IActionResult> GetById(int Id)
     {
-        var employee = _EmployeesData.GetById(Id);
+        var employee = await _EmployeesData.GetByIdAsync(Id);
         if(employee is null)
             return NotFound();
         return Ok(employee);
@@ -55,9 +78,9 @@ public class EmployeesApiController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(IEnumerable<Employee>), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult Add(Employee employee)
+    public async Task<IActionResult> Add(Employee employee)
     {
-        var id = _EmployeesData.Add(employee);
+        var id = await _EmployeesData.AddAsync(employee);
         _Logger.LogInformation("Сотрудник {0} добавлен с идентификатором {1}.", employee, id);
         return CreatedAtAction(nameof(GetById), new { Id = id }, employee);
     }
@@ -68,9 +91,9 @@ public class EmployeesApiController : ControllerBase
     /// <returns>true если редактирование выполнено успешно</returns>
     [HttpPut]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-    public IActionResult Edit(Employee employee)
+    public async Task<IActionResult> Edit(Employee employee)
     {
-        var success = _EmployeesData.Edit(employee);
+        var success = await _EmployeesData.EditAsync(employee);
         if (success)
         {
             _Logger.LogInformation("Сотрудник {0} отредактирован.", employee);
@@ -88,9 +111,9 @@ public class EmployeesApiController : ControllerBase
     [HttpDelete("{Id}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(bool), StatusCodes.Status404NotFound)]
-    public IActionResult Delete(int Id)
+    public async Task<IActionResult> Delete(int Id)
     {
-        var result = _EmployeesData.Delete(Id);
+        var result = await _EmployeesData.DeleteAsync(Id);
 
         if (result)
         {

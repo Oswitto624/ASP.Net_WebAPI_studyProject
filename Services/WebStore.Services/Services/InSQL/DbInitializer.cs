@@ -62,6 +62,8 @@ public class DbInitializer : IDbInitializer
 
         await InitializeIdentityAsync(Cancel).ConfigureAwait(false);
 
+        await InitializeEmployeesAsync(Cancel).ConfigureAwait(false);
+
         _Logger.LogInformation("Инициализация БД выполнена успешно.");
 
     }
@@ -166,5 +168,17 @@ public class DbInitializer : IDbInitializer
         else
             _Logger.LogInformation("Пользователь {0} существует", User.Administrator);
 
+    }
+
+    private async Task InitializeEmployeesAsync(CancellationToken Cancel)
+    {
+        if (await _db.Employees.AnyAsync(Cancel).ConfigureAwait(false))
+            return;
+
+        foreach (var employee in TestData.Employees)
+            employee.Id = 0;
+
+        await _db.AddRangeAsync(TestData.Employees, Cancel);
+        await _db.SaveChangesAsync(Cancel);
     }
 }

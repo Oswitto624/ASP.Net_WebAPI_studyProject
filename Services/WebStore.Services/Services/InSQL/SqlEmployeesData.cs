@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebStore.DAL.Context;
+using WebStore.Domain;
 using WebStore.Domain.Entities;
 using WebStore.Interfaces.Services;
 
@@ -15,6 +16,41 @@ public class SqlEmployeesData : IEmployeesData
     {
         _Logger = Logger;
         _db = db;
+    }
+
+    public async Task<int> CountAsync(CancellationToken Cancel = default)
+    {
+        var count = await _db.Employees.CountAsync(Cancel).ConfigureAwait(false);
+        return count;
+    }
+
+    public async Task<IEnumerable<Employee>> GetAsync(int Skip, int Take, CancellationToken Cancel = default)
+    {
+        if(Take==0)
+            return Enumerable.Empty<Employee>();
+
+        var items = await _db.Employees
+            .Skip(Skip)
+            .Take(Take)
+            .ToArrayAsync(Cancel)
+            .ConfigureAwait(false);
+        
+        return items;
+    }
+
+    public async Task<Page<Employee>> GetPageAsync(int PageIndex, int PageSize, CancellationToken Cancel = default)
+    {
+        var total_count = await _db.Employees.CountAsync(Cancel).ConfigureAwait(false);
+
+        if (PageSize == 0)
+            return new(Enumerable.Empty<Employee>(), PageIndex, PageSize, total_count);
+
+        var items = await _db.Employees
+            .Skip(PageIndex * PageSize)
+            .Take(PageSize)
+            .ToArrayAsync(Cancel);
+
+        return new(items, PageIndex, PageSize, total_count);
     }
 
     public async Task<IEnumerable<Employee>> GetAllAsync(CancellationToken Cancel = default)
@@ -79,6 +115,4 @@ public class SqlEmployeesData : IEmployeesData
 
         return true;
     }
-
-
 }

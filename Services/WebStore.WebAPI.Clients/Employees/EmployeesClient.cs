@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Net.Http.Json;
+using WebStore.Domain;
 using WebStore.Domain.Entities;
 using WebStore.Interfaces;
 using WebStore.Interfaces.Services;
@@ -15,6 +17,36 @@ public class EmployeesClient : BaseClient, IEmployeesData
         : base(Client, WebAPIAddresses.V1.Employees)
     {
         _Logger = Logger;
+    }
+
+    public async Task<int> CountAsync(CancellationToken Cancel = default)
+    {
+        var count = await GetAsync<int>($"{Address}/count", Cancel).ConfigureAwait(false);
+        return count;
+    }
+
+    public async Task<IEnumerable<Employee>> GetAsync(int Skip, int Take, CancellationToken Cancel = default)
+    {
+        var response = await Http.GetAsync($"{Address}/({Skip}:{Take})", Cancel).ConfigureAwait(false);
+        
+        if(response.StatusCode == HttpStatusCode.NoContent)
+            return Enumerable.Empty<Employee>();
+
+        var items = await response
+            .EnsureSuccessStatusCode()
+            .Content
+            .ReadFromJsonAsync<IEnumerable<Employee>>(cancellationToken: Cancel)
+            ?? throw new InvalidOperationException("Не удалось получить список сотрудников");
+
+        return items;
+    }
+
+    public async Task<Page<Employee>> GetPageAsync(int PageIndex, int PageSize, CancellationToken Cancel = default)
+    {
+        var page = await GetAsync<Page<Employee>>($"{Address}/page({PageIndex}:{PageSize})", Cancel)
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException("Не удалось получить список сотрудников");
+        return page;
     }
 
     public async Task<IEnumerable<Employee>> GetAllAsync(CancellationToken Cancel = default)
@@ -63,6 +95,4 @@ public class EmployeesClient : BaseClient, IEmployeesData
         var success = response.IsSuccessStatusCode;
         return success;
     }
-
-
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using WebStore.Domain;
 using WebStore.Domain.Entities;
 using WebStore.Interfaces.Services;
 using WebStore.Services.Data;
@@ -16,6 +17,35 @@ public class InMemoryEmployeesData : IEmployeesData
         _Logger = Logger;
         _Employees = TestData.Employees;
         _LastFreeId = _Employees.Count == 0 ? 1 : _Employees.Max(e => e.Id) + 1; //только для тестового сервиса
+    }
+
+
+    public Task<int> CountAsync(CancellationToken Cancel = default) => Cancel.IsCancellationRequested
+        ? Task.FromCanceled<int>(Cancel)
+        : Task.FromResult(_Employees.Count);
+
+    public Task<IEnumerable<Employee>> GetAsync(int Skip, int Take, CancellationToken Cancel = default)
+    {
+        if(Cancel.IsCancellationRequested)
+            return Task.FromCanceled<IEnumerable<Employee>>(Cancel);
+
+        var result = _Employees
+            .Skip(Skip)
+            .Take(Take);
+
+        return Task.FromResult(result);
+    }
+
+    public Task<Page<Employee>> GetPageAsync(int PageIndex, int PageSize, CancellationToken Cancel = default)
+    {
+        if (Cancel.IsCancellationRequested)
+            return Task.FromCanceled<Page<Employee>>(Cancel);
+
+        var items = _Employees
+            .Skip(PageIndex * PageSize)
+            .Take(PageSize);
+
+        return Task.FromResult(new Page<Employee>(items, PageIndex, PageSize, _Employees.Count));
     }
 
     public Task<IEnumerable<Employee>> GetAllAsync(CancellationToken Cancel = default)
@@ -96,6 +126,4 @@ public class InMemoryEmployeesData : IEmployeesData
 
         return true;
     }
-
-
 }

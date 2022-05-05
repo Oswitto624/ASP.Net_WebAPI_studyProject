@@ -23,8 +23,13 @@
     </div>
 
     <div class="col-md-4">
+        <h4>Рендеринг на стороне клиента</h4>
 
-        <a class="btn btn-default">
+        <a class="btn btn-default"
+            data-ajax="true"
+            data-ajax-url="@Url.Action("GetJson", "AjaxTest", new { id = 13, msg = "Hello Json!", Delay = "500"})"
+            data-ajax-loading="#spinner-client"
+            data-ajax-success="OnJsonLoaded">
             Загрузка
         </a>
 
@@ -36,8 +41,9 @@
     </div>
 
     <div class="col-md-4">
+        <h4>Рендеринг руками</h4>
 
-        <a class="btn btn-default">
+        <a class="btn btn-default" id="load-data-button">
             Загрузка
         </a>
 
@@ -58,4 +64,44 @@
             margin-bottom: 25px;
         }
     </style>
+}
+
+@section Scripts
+{
+    <script>
+        OnJsonLoaded = data => {
+            const panel = $("#panel-client");
+
+            panel.empty();
+            panel.append("msg: " + data.message);
+            panel.append("<br/>");
+            panel.append("Server time: " + data.serverTime);
+        }
+
+        $("#load-data-button").click(async e => {
+            e.preventDefault();
+
+            console.log("AJAX request start");
+
+            $("#spinner-js").show();
+            
+            var response = await fetch("@Url.Action("GetJSON", "AjaxTest",  new { id = 13, msg = "Hello Fetch!", Delay = "200"})");
+
+            const panel = $("#panel-js");
+
+            panel.empty();
+
+            if(response.ok){
+                var data = await response.json();
+            
+                panel.append("msg: " + data.message);
+                panel.append("<br/>");
+                panel.append("Server time: " + data.serverTime);
+            }else{
+                console.log("Fetch error" + response.status);
+                panel.append("err: " + response.status);
+            }
+            $("#spinner-js").hide();
+        });
+    </script>
 }

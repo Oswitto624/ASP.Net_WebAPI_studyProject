@@ -17,6 +17,8 @@
 
         const container = $("#catalog-container");
 
+        container.LoadingOverlay("show");
+
         const data = button.data();
         let query = "";
         for (let key in data)
@@ -34,5 +36,7 @@
         } else {
             console.log("clickOnPage fail", response.status);
         }
+
+        container.LoadingOverlay("hide");
     }
 }

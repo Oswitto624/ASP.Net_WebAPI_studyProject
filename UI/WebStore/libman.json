@@ -21,6 +21,10 @@
     {
       "library": "scrollup@2.3.2",
       "destination": "wwwroot/lib/scrollup/"
+    },
+    {
+      "library": "jquery-loading-overlay@2.1.7",
+      "destination": "wwwroot/lib/jquery-loading-overlay/"
     }
   ]
 }

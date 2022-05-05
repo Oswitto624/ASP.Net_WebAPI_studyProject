@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\AjaxTest\Index.cshtml" />
     <None Include="Views\WebAPI\Index.cshtml" />
     <None Include="wwwroot\js\Cart\CartLogic.js" />
   </ItemGroup>

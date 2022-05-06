@@ -45,11 +45,12 @@ public class Paging : TagHelper
 
         if (PageNumber == PageModel.Page)
             li.AddCssClass("active");
-        else
-        {
-            PageUrlValues["PageNumber"] = PageNumber;
-            a.Attributes["href"] = Url.Action(PageAction, PageUrlValues);
-        }
+
+        PageUrlValues["PageNumber"] = PageNumber;
+        a.Attributes["href"] = Url.Action(PageAction, PageUrlValues);
+
+        foreach (var (key, value) in PageUrlValues.Select(v => (v.Key, Value: v.Value?.ToString())).Where(v => v.Value is { Length: > 0 }))
+            a.MergeAttribute($"data-{key}", value);
 
         li.InnerHtml.AppendHtml(a);
         return li;

@@ -1,23 +1,28 @@
-﻿using Microsoft.Extensions.Configuration;
-using WebStore.WebAPI.Clients.Products;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
+using WebStore.ConsoleUI;
+
+WebAPITest.Start();
 
 var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .Build();
+   .AddJsonFile("appsettings.json")
+   .Build();
 
-var http = new HttpClient 
-{
-    BaseAddress = new(configuration["WebAPI"])
-};
+var builder = new HubConnectionBuilder();
+var connection = builder
+   .WithUrl(configuration["ChatAddress"])
+   .Build();
 
-var products_client = new ProductsClient(http);
+using var registration = connection.On<string>("MessageFromServer", msg => Console.WriteLine("Сообщение от сервера {0}", msg));
 
-Console.WriteLine("Ожидание запуска WebAPI. Нажмите Enter для продложения");
+Console.Write("Ожидание запуска сервера. Нажмите Enter для продолжения.");
 Console.ReadLine();
 
-foreach (var product in products_client.GetProducts().Items)
+await connection.StartAsync();
+Console.WriteLine("Соединение установлено");
+
+while (true)
 {
-    Console.WriteLine("[{0}] {1}", product.Id, product.Name);
+    var message = Console.ReadLine();
+    await connection.SendAsync("SendMessage", message);
 }
-
-Console.ReadLine();

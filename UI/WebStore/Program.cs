@@ -5,6 +5,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using WebStore.Domain.Entities.Identity;
+using WebStore.Hubs;
 using WebStore.Interfaces.Services;
 using WebStore.Interfaces.TestAPI;
 using WebStore.Logging;
@@ -132,6 +133,7 @@ static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
         .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 5, TimeSpan.FromSeconds(30));
 
 services.AddAutoMapper(typeof(Program));
+services.AddSignalR();
 
 var app = builder.Build();
 
@@ -149,6 +151,8 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
+    endpoints.MapHub<ChatHub>("/chat");
+
     endpoints.MapControllerRoute(
         name: "areas",
         pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
